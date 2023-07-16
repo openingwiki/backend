@@ -2,6 +2,7 @@
 from app.db import Base
 
 from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy.orm import relationship
 
 
 class Account(Base):
@@ -11,3 +12,5 @@ class Account(Base):
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     verified = Column(Boolean, default=False)
+
+    tokens = relationship("Token", back_populates="account")

@@ -10,13 +10,13 @@ from sqlalchemy.orm import Session
 from redis import Redis
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import HttpUrl
 from typing import Annotated
 
-from .. import depenencies
+from .. import dependencies
 from app import schemas
 from app.core import settings, email_sender, security
-from app.crud import crud_account, crud_email_confirm_token
+from app.crud import crud_account, crud_email_confirm_token, crud_token
+from app import models
 
 
 router = APIRouter()
@@ -24,8 +24,8 @@ router = APIRouter()
 
 @router.post("/register", description="Request for registering user.")
 async def register(
-    db: Session = Depends(depenencies.get_db),
-    redis: Redis = Depends(depenencies.get_redis),
+    db: Session = Depends(dependencies.get_db),
+    redis: Redis = Depends(dependencies.get_redis),
     form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> None:
     """
@@ -63,8 +63,8 @@ async def register(
 @router.get("/verify", description="Request for email verification.")
 async def verify(
     *,
-    db: Session = Depends(depenencies.get_db),
-    redis: Redis = Depends(depenencies.get_redis),
+    db: Session = Depends(dependencies.get_db),
+    redis: Redis = Depends(dependencies.get_redis),
     email_confirm_token: Annotated[str, Query(alias="email-confirm-token")],
 ):
     """
@@ -77,7 +77,7 @@ async def verify(
             query parameter name must be 'email-confirm-token'.
 
     Returns:
-        (for now)Muda JSON
+        JSON with access token info.
         HTTPException 498 - Invalid token. Token also might be expired.
     """
     account_id = crud_email_confirm_token.verify_email_confirm_token(redis, email_confirm_token)
@@ -89,4 +89,32 @@ async def verify(
     account = crud_account.get_account(db, account_id=account_id)
     crud_account.verify_account(db, account)
 
-    return {"account": "verified"}
+    token: models.Token = crud_token.create_access_token(db, account)
+    return {"access_token": token, "token_type": "bearer"}
+
+
+@router.post("/login", description="Request for login.")
+async def login(db: Session = Depends(dependencies.get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+    """
+    Authorizing.
+
+    Parameters:
+        db: Session - SQLAlchemy session to database, initializing in dependency injection.
+        form_data: OAuth2 standard form for account data, must contain username and password.
+
+    Returns:
+        JSON with access token info.
+        HTTPException 401 - Invalid credentials.
+    """
+    email = form_data.username
+    password = form_data.password
+    account: models.Account = crud_account.get_account_by_email(db, email)
+    if not account:  # Exception if there isn't such email.
+        raise HTTPException(401, detail="Invalid credentials")
+
+    is_password_correct = security.verify_password(password, account.hashed_password)
+    if not is_password_correct:  # Exception if password doesn't match with password hash.
+        raise HTTPException(401, detail="Invalid credentials")
+
+    token: models.Token = crud_token.create_access_token(db, account)
+    return {"access_token": token, "token_type": "bearer"}
