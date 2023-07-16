@@ -1,3 +1,8 @@
+"""
+Including every router from /endpoints.
+app: FastAPI - main variable for backend launching.
+"""
+
 from fastapi import FastAPI
 
 from .endpoints import account
@@ -7,8 +12,4 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-app.include_router(
-    account.router,
-    prefix="/account",
-    tags="account"
-)
+app.include_router(account.router, prefix="/account", tags=["account"])

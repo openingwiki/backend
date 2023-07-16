@@ -1,3 +1,4 @@
+"""Account SQLAlchemy model."""
 from app.db import Base
 
 from sqlalchemy import Column, Integer, String, Boolean
