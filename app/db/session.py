@@ -1,5 +1,5 @@
 """
-Creating database engine and such such things.
+Creating database engine and such things.
 """
 
 from sqlalchemy import create_engine
