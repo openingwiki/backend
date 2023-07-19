@@ -25,5 +25,5 @@ class TokenOut(TokenBase):
 class TokenInDB(TokenBase):
     """Token in db also stores whose is token."""
 
-    token_id: int
+    id: int
     account_id: int

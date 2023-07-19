@@ -8,8 +8,8 @@ from sqlalchemy.orm import relationship
 class Token(Base):
     __tablename__ = "tokens"
 
-    token_id = Column(Integer, primary_key=True, index=True)
-    account_id = Column(Integer, ForeignKey("accounts.account_id"))
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
     token = Column(String, index=True)
 
-    account = relationship("Account", back_populates="tokens")
+    user = relationship("User", back_populates="tokens")

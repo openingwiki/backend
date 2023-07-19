@@ -2,10 +2,14 @@
 Dependencies for FastAPI dependency injection system.
 """
 
-from typing import Generator
+from typing import Generator, Annotated
+from sqlalchemy.orm import Session
+from fastapi import Depends, Cookie, HTTPException
 
 from app.db import SessionLocal
 from app.redis import open_connection
+from app.crud import crud_token, crud_user
+from app import models
 
 
 def get_db() -> Generator:
@@ -15,7 +19,7 @@ def get_db() -> Generator:
 
     Parameters:
         Nothing.
-    
+
     Returns:
         db: Session - database session.
     """
@@ -33,7 +37,7 @@ def get_redis() -> Generator:
 
     Parameters:
         Nothing.
-    
+
     Returns:
         redis: Redis - redis session.
     """
@@ -42,3 +46,14 @@ def get_redis() -> Generator:
         yield redis
     finally:
         redis.close()
+
+
+def get_current_user(token: Annotated[str, Cookie()], db: Session = Depends(get_db)) -> models.User:
+    token_data: models.Token = crud_token.get_token(db, token)
+
+    if not token_data:
+        raise HTTPException(403, detail="Invalid token.")
+
+    user = crud_user.get_user(db, user_id=token_data.user_id)
+
+    return user
