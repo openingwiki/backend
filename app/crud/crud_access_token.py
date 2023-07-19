@@ -2,13 +2,14 @@
 CRUD requests for token.
 """
 from typing import Union
+
 from sqlalchemy.orm import Session
 
 from app import models
 from app.core import security
 
 
-def create_token(db: Session, user: models.User) -> str:
+def create_access_token(db: Session, user: models.User) -> str:
     """
     Creating token.
 
@@ -19,7 +20,7 @@ def create_token(db: Session, user: models.User) -> str:
     Returns:
         token: str - created token.
     """
-    token = security.create_access_token()
+    token = security.create_token()
     token_model = models.Token(token=token, user_id=user.id)
     db.add(token_model)
     db.commit()
@@ -27,5 +28,16 @@ def create_token(db: Session, user: models.User) -> str:
     return token_model.token
 
 
-def get_token(db: Session, token: str) -> Union[models.Token, None]:
+def get_access_token_info(db: Session, token: str) -> Union[models.Token, None]:
+    """
+    Getting acces token row from table by token.
+
+    Parameters:
+        db: Session - database session to deal with.
+        token: str - token.
+    
+    Returns:
+        token_model: models.Token - token sqlalchemt model.
+        None if there isn't such token.
+    """
     return db.query(models.Token).filter(models.Token.token == token).first()

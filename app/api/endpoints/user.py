@@ -6,18 +6,17 @@ API requests quick description:
 POST /user/register - register user
 GET /user/verify - verify user
 """
-from sqlalchemy.orm import Session
-from redis import Redis
-from fastapi import APIRouter, Depends, HTTPException, Query, Body, Form, Response
-from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 
-from .. import dependencies
-from app import schemas
-from app.core import settings, email_sender, security
-from app.crud import crud_email_confirm_token, crud_token, crud_user
-from app import models
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from redis import Redis
+from sqlalchemy.orm import Session
 
+from app import models, schemas
+from app.core import email_sender, security, settings
+from app.crud import crud_email_confirm_token, crud_access_token, crud_user
+
+from .. import dependencies
 
 router = APIRouter()
 
@@ -65,7 +64,7 @@ async def verify(
     db: Session = Depends(dependencies.get_db),
     redis: Redis = Depends(dependencies.get_redis),
     email_confirm_token: Annotated[str, Query(alias="email-confirm-token")],
-    response: Response,
+    response: Response
 ):
     """
     Verifying email.
@@ -89,7 +88,7 @@ async def verify(
     user = crud_user.get_user(db, user_id=user_id)
     crud_user.verify_user(db, user)
 
-    token: models.Token = crud_token.create_token(db, user)
+    token: models.Token = crud_access_token.create_access_token(db, user)
     response.set_cookie("token", token)
     return {"access_token": token, "token_type": "bearer"}
 
@@ -117,6 +116,6 @@ async def login(*, response: Response, db: Session = Depends(dependencies.get_db
     if not is_password_correct:  # Exception if password doesn't match with password hash.
         raise HTTPException(401, detail="Invalid credentials")
 
-    token: models.Token = crud_token.create_token(db, user)
+    token: models.Token = crud_access_token.create_access_token(db, user)
     response.set_cookie("token", token)
     return {"access_token": token, "token_type": "bearer"}

@@ -2,14 +2,15 @@
 Dependencies for FastAPI dependency injection system.
 """
 
-from typing import Generator, Annotated
-from sqlalchemy.orm import Session
-from fastapi import Depends, Cookie, HTTPException
+from typing import Annotated, Generator
 
+from fastapi import Cookie, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from app import models
+from app.crud import crud_access_token, crud_user
 from app.db import SessionLocal
 from app.redis import open_connection
-from app.crud import crud_token, crud_user
-from app import models
 
 
 def get_db() -> Generator:
@@ -49,7 +50,19 @@ def get_redis() -> Generator:
 
 
 def get_current_user(token: Annotated[str, Cookie()], db: Session = Depends(get_db)) -> models.User:
-    token_data: models.Token = crud_token.get_token(db, token)
+    """
+    This dependency injection used for getting user, which has sent requests with token.
+    Token must be stored in cookies.
+
+    Parameters:
+        token: Annotated[str, Cookie()] - token from cookie.
+        db: Session - SQLAlchemy session to database, initializing in dependency injection.
+
+    Returns:
+        user: models.User - user sqlalchemy model.
+        HTTPExecption(403) if invalid token.  
+    """
+    token_data: models.Token = crud_access_token.get_access_token_info(db, token)
 
     if not token_data:
         raise HTTPException(403, detail="Invalid token.")

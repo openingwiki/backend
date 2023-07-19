@@ -5,9 +5,11 @@ app: FastAPI - main variable for backend launching.
 
 from fastapi import FastAPI
 
-from .endpoints import user, openings
-from app.db import engine, Base
+from app.db import Base, engine
 
+from .endpoints import openings, user
+
+# Creating database tables.
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()

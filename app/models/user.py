@@ -1,8 +1,8 @@
 """User SQLAlchemy model."""
-from app.db import Base
-
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.orm import relationship
+
+from app.db import Base
 
 
 class User(Base):

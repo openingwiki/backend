@@ -9,8 +9,8 @@ def open_connection() -> Redis:
 
     Parameters:
         Nothing
-    
+
     Returns:
-        database_session: Redis - Redis database session. 
+        database_session: Redis - Redis database session.
     """
     return Redis(host="localhost", port=6379, decode_responses=True)

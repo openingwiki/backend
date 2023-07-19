@@ -1,4 +1,5 @@
 from typing import Union
+
 from redis import Redis
 
 from app import schemas
@@ -16,10 +17,8 @@ def create_email_confirm_token(redis: Redis, user: schemas.UserInDB) -> str:
     Returns:
         token: str - email confirmation token.
     """
-    email_confirm_token = security.create_access_token()
-    redis.set(
-        email_confirm_token, user.id, ex=settings.EMAIL_CONFIRM_TOKEN_EXPIRING_SECONDS
-    )  # Exires after 3 hours.
+    email_confirm_token = security.create_token()
+    redis.set(email_confirm_token, user.id, ex=settings.EMAIL_CONFIRM_TOKEN_EXPIRING_SECONDS)  # Exires after 3 hours.
     return email_confirm_token
 
 

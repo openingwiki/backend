@@ -1,5 +1,5 @@
 """
-Pydantic token models.
+Token pydantic models.
 """
 from pydantic import BaseModel
 

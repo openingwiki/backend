@@ -1,3 +1,3 @@
 """SQLAlchemy things."""
 
-from .session import SessionLocal, Base, engine
+from .session import Base, SessionLocal, engine

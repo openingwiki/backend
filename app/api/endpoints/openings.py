@@ -1,24 +1,19 @@
 """
-API requests with prefix /user.
-There are function to deal with user: registering, verifying and etc.
+API requests with prefix /openings.
+There are function to deal with openings: add and etc.
 
 API requests quick description:
-POST /user/register - register user
-GET /user/verify - verify user
+POST /openings/add - add opening
 """
-from sqlalchemy.orm import Session
-from redis import Redis
-from fastapi import APIRouter, Depends, HTTPException, Query, Body
-from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
-from pydantic import BaseModel, HttpUrl
+
+from fastapi import APIRouter, Body, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from app import models, schemas
+from app.crud import crud_opening
 
 from .. import dependencies
-from app import schemas
-from app.core import settings, email_sender, security
-from app.crud import crud_email_confirm_token, crud_token, crud_user, crud_opening
-from app import models
-
 
 router = APIRouter()
 
@@ -27,9 +22,21 @@ router = APIRouter()
 async def register(
     opening_data: Annotated[schemas.OpeningAdd, Body()],
     db: Session = Depends(dependencies.get_db),
-    redis: Redis = Depends(dependencies.get_redis),
     user: models.User = Depends(dependencies.get_current_user),
 ):
+    """
+    Adding openings. Geting user token from cookie.
+    If user is moderator, then adding straightaway
+    Else request will be sent to moderation.
+
+    Parameters:
+        opening_data: Annotated[schemas.OpeningAdd, Body()] - opening data in body with json
+        db: Session - SQLAlchemy session to database, initializing in dependency injection.
+        user: models.User - user sqlalchemy model, dependency injection gets token from cookie then user.
+
+    Returns:
+        Muda json.
+    """
     if not user:
         raise HTTPException(401, "Invalid credentials")
 
@@ -42,4 +49,3 @@ async def register(
         opening_data.added_by_user = user.id
         crud_opening.add_opening(db, opening_data, needs_moderation=True)
         return {"sended to moderation": True}
-    

@@ -1,8 +1,8 @@
-"""Token SQLAlchemy model."""
-from app.db import Base
-
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+"""Opening SQLAlchemy model."""
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
+from app.db import Base
 
 
 class Opening(Base):

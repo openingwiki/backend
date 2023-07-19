@@ -3,13 +3,13 @@ Function for security like password hashing and etc.
 """
 
 import secrets
+
 import bcrypt
 
 from app.core import settings
-from app import schemas
 
 
-def create_access_token() -> str:
+def create_token() -> str:
     """
     Generating random token.
 

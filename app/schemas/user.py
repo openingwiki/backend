@@ -1,5 +1,5 @@
 """
-Pydantic user models.
+User pydantic models.
 """
 from pydantic import BaseModel, EmailStr
 
