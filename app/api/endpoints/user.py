@@ -8,13 +8,13 @@ GET /user/verify - verify user
 """
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from redis import Redis
 from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.core import email_sender, security, settings
-from app.crud import crud_email_confirm_token, crud_access_token, crud_user
+from app.crud import crud_access_token, crud_email_confirm_token, crud_user
 
 from .. import dependencies
 
@@ -64,7 +64,7 @@ async def verify(
     db: Session = Depends(dependencies.get_db),
     redis: Redis = Depends(dependencies.get_redis),
     email_confirm_token: Annotated[str, Query(alias="email-confirm-token")],
-    response: Response
+    response: Response,
 ):
     """
     Verifying email.
@@ -83,7 +83,7 @@ async def verify(
 
     # Exception if token doesn't exist.
     if not user_id:
-        raise HTTPException(status_code=498, detail="Invalid token")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
     user = crud_user.get_user(db, user_id=user_id)
     crud_user.verify_user(db, user)
@@ -110,11 +110,11 @@ async def login(*, response: Response, db: Session = Depends(dependencies.get_db
     password = user_data.password
     user: models.User = crud_user.get_user_by_email(db, email)
     if not user:  # Exception if there isn't such email.
-        raise HTTPException(401, detail="Invalid credentials")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     is_password_correct = security.verify_password(password, user.hashed_password)
     if not is_password_correct:  # Exception if password doesn't match with password hash.
-        raise HTTPException(401, detail="Invalid credentials")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     token: models.Token = crud_access_token.create_access_token(db, user)
     response.set_cookie("token", token)

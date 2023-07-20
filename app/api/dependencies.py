@@ -4,7 +4,7 @@ Dependencies for FastAPI dependency injection system.
 
 from typing import Annotated, Generator
 
-from fastapi import Cookie, Depends, HTTPException
+from fastapi import Cookie, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app import models
@@ -60,12 +60,12 @@ def get_current_user(token: Annotated[str, Cookie()], db: Session = Depends(get_
 
     Returns:
         user: models.User - user sqlalchemy model.
-        HTTPExecption(403) if invalid token.  
+        HTTPExecption(401) if invalid token.  
     """
     token_data: models.Token = crud_access_token.get_access_token_info(db, token)
 
     if not token_data:
-        raise HTTPException(403, detail="Invalid token.")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token.")
 
     user = crud_user.get_user(db, user_id=token_data.user_id)
 

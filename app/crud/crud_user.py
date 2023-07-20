@@ -52,7 +52,7 @@ def get_user_by_email(db: Session, email: str) -> Union[models.User, None]:
         email: int - email of user ot get.
 
     Returns:
-        user: User - SQLAlchemt model with user data.
+        user: User - SQLAlchemy model with user data.
         None - if there isn't such user.
     """
     return db.query(models.User).filter(models.User.email == email).first()

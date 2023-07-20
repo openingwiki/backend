@@ -6,7 +6,7 @@ import secrets
 
 import bcrypt
 
-from app.core import settings
+from app.core.config import settings
 
 
 def create_token() -> str:

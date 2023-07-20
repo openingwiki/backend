@@ -1,12 +1,12 @@
-"""Opening SQLAlchemy model."""
+"""WikiPage SQLAlchemy model."""
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.db import Base
 
 
-class Opening(Base):
-    __tablename__ = "openings"
+class WikiPage(Base):
+    __tablename__ = "wiki_pages"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
@@ -14,4 +14,4 @@ class Opening(Base):
     added_by_user = Column(Integer, ForeignKey("users.id"))
     needs_moderation = Column(Boolean, default=True)
 
-    rl_added_by_user = relationship("User", back_populates="added_openings")
+    rl_added_by_user = relationship("User", back_populates="added_wiki_pages")
