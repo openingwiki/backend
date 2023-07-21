@@ -18,4 +18,4 @@ class User(Base):
     is_admin = Column(Boolean, default=False)
 
     tokens = relationship("Token", back_populates="user")
-    added_wiki_pages = relationship("WikiPages", back_populates="rl_added_by_user")
+    added_wiki_pages = relationship("WikiPage", back_populates="rl_added_by_user")

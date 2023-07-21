@@ -6,7 +6,7 @@ from app import schemas
 from app.core import security, settings
 
 
-def create_email_confirm_token(redis: Redis, user: schemas.UserInDB) -> str:
+def create(redis: Redis, user: schemas.UserInDB) -> str:
     """
     Creating email confirm token in redis database.
 
@@ -22,7 +22,7 @@ def create_email_confirm_token(redis: Redis, user: schemas.UserInDB) -> str:
     return email_confirm_token
 
 
-def verify_email_confirm_token(redis: Redis, email_confirm_token: str) -> Union[int, None]:
+def verify(redis: Redis, email_confirm_token: str) -> Union[int, None]:
     """
     Verifying user with token.
 

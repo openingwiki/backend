@@ -40,10 +40,10 @@ async def register(
     """
 
     # Adding user to database.
-    user = crud_user.create_user(db, user_data)
+    user = crud_user.create(db, user_data)
 
     # Creating token to email confirmation.
-    email_confirm_token = crud_email_confirm_token.create_email_confirm_token(redis, user)
+    email_confirm_token = crud_email_confirm_token.create(redis, user)
     confirmation_link = f"http://{settings.API_DOMAIN}/user/verify?email-confirm-token={email_confirm_token}"
 
     # Sending email.
@@ -79,16 +79,16 @@ async def verify(
         JSON with access token info.
         HTTPException 498 - Invalid token. Token also might be expired.
     """
-    user_id = crud_email_confirm_token.verify_email_confirm_token(redis, email_confirm_token)
+    user_id = crud_email_confirm_token.verify(redis, email_confirm_token)
 
     # Exception if token doesn't exist.
     if not user_id:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
-    user = crud_user.get_user(db, user_id=user_id)
-    crud_user.verify_user(db, user)
+    user = crud_user.get(db, user_id=user_id)
+    crud_user.verify(db, user)
 
-    token: models.Token = crud_access_token.create_access_token(db, user)
+    token: models.Token = crud_access_token.create(db, user)
     response.set_cookie("token", token)
     return {"access_token": token, "token_type": "bearer"}
 
@@ -108,7 +108,7 @@ async def login(*, response: Response, db: Session = Depends(dependencies.get_db
     """
     email = user_data.email
     password = user_data.password
-    user: models.User = crud_user.get_user_by_email(db, email)
+    user: models.User = crud_user.get_by_email(db, email)
     if not user:  # Exception if there isn't such email.
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
@@ -116,6 +116,6 @@ async def login(*, response: Response, db: Session = Depends(dependencies.get_db
     if not is_password_correct:  # Exception if password doesn't match with password hash.
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
-    token: models.Token = crud_access_token.create_access_token(db, user)
+    token: models.Token = crud_access_token.create(db, user)
     response.set_cookie("token", token)
     return {"access_token": token, "token_type": "bearer"}

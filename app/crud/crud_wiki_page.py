@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 
 
-def add_wiki_page(db: Session, wiki_page: schemas.WikiPageAdd, needs_moderation: bool = True) -> models.WikiPage:
+def create(db: Session, wiki_page: schemas.WikiPageAdd, needs_moderation: bool = True) -> models.WikiPage:
     """
     Adding wiki page into database.
 

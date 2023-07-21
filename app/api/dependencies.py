@@ -62,11 +62,11 @@ def get_current_user(token: Annotated[str, Cookie()], db: Session = Depends(get_
         user: models.User - user sqlalchemy model.
         HTTPExecption(401) if invalid token.  
     """
-    token_data: models.Token = crud_access_token.get_access_token_info(db, token)
+    token_data: models.Token = crud_access_token.get(db, token)
 
     if not token_data:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token.")
 
-    user = crud_user.get_user(db, user_id=token_data.user_id)
+    user = crud_user.get(db, user_id=token_data.user_id)
 
     return user

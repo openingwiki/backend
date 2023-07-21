@@ -1,15 +1,15 @@
 """
 CRUD requests for user.
 """
-from sqlalchemy.orm import Session
 from typing import Union
 
-from app import models
-from app import schemas
+from sqlalchemy.orm import Session
+
+from app import models, schemas
 from app.core import security
 
 
-def create_user(db: Session, user: schemas.UserCreate) -> models.User:
+def create(db: Session, user: schemas.UserCreate) -> models.User:
     """
     Adding user into table.
 
@@ -21,14 +21,16 @@ def create_user(db: Session, user: schemas.UserCreate) -> models.User:
         user_model: UserInDB - SQLAlchemy model with user data.
     """
     user_hashed_password = security.get_password_hash(user.password)
-    user_model = models.User(email=user.email, hashed_password=user_hashed_password, verified=False)
+    user_model = models.User(
+        email=user.email, hashed_password=user_hashed_password, verified=False, nickname=user.nickname
+    )
     db.add(user_model)
     db.commit()
     db.refresh(user_model)
     return user_model
 
 
-def get_user(db: Session, user_id: int) -> Union[models.User, None]:
+def get(db: Session, user_id: int) -> Union[models.User, None]:
     """
     Getting user from table by user id.
 
@@ -43,7 +45,7 @@ def get_user(db: Session, user_id: int) -> Union[models.User, None]:
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_by_email(db: Session, email: str) -> Union[models.User, None]:
+def get_by_email(db: Session, email: str) -> Union[models.User, None]:
     """
     Getting user from table by email.
 
@@ -58,7 +60,17 @@ def get_user_by_email(db: Session, email: str) -> Union[models.User, None]:
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-def verify_user(db: Session, user: models.User):
+def set_moderator(db: Session, user: models.User) -> models.User:
+    """
+    Setting user to moderator.
+    """
+    user.is_moderator = True
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def verify(db: Session, user: models.User):
     """
     Setting user verified flag to True.
 

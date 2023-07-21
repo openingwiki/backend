@@ -1,10 +1,13 @@
 """
 Project settings.
 """
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    # Models settings.
+    model_config = ConfigDict(case_sensitive=True)
     # API settings.
     API_DOMAIN: str = ""
 
@@ -16,7 +19,6 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: str = ""
 
     # Security settings.
-    PASSWORD_SALT: str = ""
     TOKEN_LENGHT_IN_BYTES: int = 0  # x2 symbols.
     EMAIL_CONFIRM_TOKEN_EXPIRING_SECONDS: int = 0  # 3 hours.
 
@@ -24,8 +26,8 @@ class Settings(BaseSettings):
     REDIS_HOST: str = ""
     REDIS_PORT: int = 0
 
-    class Config:
-        case_sensitive = True
+    # Testing settings.
+    IS_SETTINGS_FOR_TEST: bool = True
 
 
 settings = Settings()

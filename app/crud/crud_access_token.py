@@ -9,7 +9,7 @@ from app import models
 from app.core import security
 
 
-def create_access_token(db: Session, user: models.User) -> str:
+def create(db: Session, user: models.User) -> models.Token:
     """
     Creating token.
 
@@ -25,17 +25,17 @@ def create_access_token(db: Session, user: models.User) -> str:
     db.add(token_model)
     db.commit()
     db.refresh(token_model)
-    return token_model.token
+    return token_model
 
 
-def get_access_token_info(db: Session, token: str) -> Union[models.Token, None]:
+def get(db: Session, token: str) -> Union[models.Token, None]:
     """
     Getting acces token row from table by token.
 
     Parameters:
         db: Session - database session to deal with.
         token: str - token.
-    
+
     Returns:
         token_model: models.Token - token sqlalchemt model.
         None if there isn't such token.

@@ -42,10 +42,10 @@ async def register(
 
     if user.is_moderator:
         wiki_page_data.added_by_user = user.id
-        crud_wiki_page.add_wiki_page(db, wiki_page_data, needs_moderation=False)
+        crud_wiki_page.create(db, wiki_page_data, needs_moderation=False)
         return {"added": True}
 
     else:
         wiki_page_data.added_by_user = user.id
-        crud_wiki_page.add_wiki_page(db, wiki_page_data, needs_moderation=True)
+        crud_wiki_page.create(db, wiki_page_data, needs_moderation=True)
         return {"sended to moderation": True}

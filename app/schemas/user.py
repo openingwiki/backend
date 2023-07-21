@@ -1,7 +1,7 @@
 """
 User pydantic models.
 """
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class UserBase(BaseModel):
@@ -29,15 +29,15 @@ class UserLogin(UserIn):
 class UserInDB(UserBase):
     """How user storing in DB."""
 
+    # Model settings.
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     hashed_password: str
     verified: bool
     avatar_path: str
     is_moderator: bool
     is_admin: bool
-
-    class Config:
-        from_attributes = True
 
 
 class UserOut(UserBase):
