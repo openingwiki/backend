@@ -1,4 +1,4 @@
 """Pydantic models."""
-from .token import TokenIn, TokenInDB, TokenOut
+from .access_token import AccessTokenIn, AccessTokenInDB, AccessTokenOut
 from .user import UserCreate, UserInDB, UserLogin, UserOut
-from .wiki_page import WikiPageAdd, WikiPageInDB, WikiPageOut
+from .wiki_page import WikiPageCreate, WikiPageInDB, WikiPageOut

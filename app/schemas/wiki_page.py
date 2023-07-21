@@ -12,7 +12,7 @@ class WikiPageBase(BaseModel):
     added_by_user: int | None = None
 
 
-class WikiPageAdd(WikiPageBase):
+class WikiPageCreate(WikiPageBase):
     """WikiPage body in request."""
 
     pass

@@ -1,4 +1,14 @@
+from redis import Redis
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.schema import DropTable
+
+from app import redis
 from app.db import Base, engine
+
+
+@compiles(DropTable, "postgresql")
+def _compile_drop_table(element, compiler, **kwargs):
+    return compiler.visit_drop_table(element) + " CASCADE"
 
 
 def clean_db():

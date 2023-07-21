@@ -1,4 +1,4 @@
-from .access_token import random_token_indb
+from .access_token import random_access_token_indb
 from .user import random_moderator_indb, random_pydantic_user_create, random_user_indb
 from .utils import clean_db
 from .wiki_page import random_pydantic_wiki_page

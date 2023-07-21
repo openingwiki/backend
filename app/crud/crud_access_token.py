@@ -1,5 +1,5 @@
 """
-CRUD requests for token.
+CRUD requests for access token.
 """
 from typing import Union
 
@@ -9,35 +9,33 @@ from app import models
 from app.core import security
 
 
-def create(db: Session, user: models.User) -> models.Token:
+def create(db: Session, access_token: models.AccessToken) -> models.AccessToken:
     """
-    Creating token.
+    Creating access token.
 
     Parameters:
         db: Session - database session to deal with.
-        user: models.User - pydantic model of user for which the token is being created.
+        access_token: models.AccessToken - pydantic model of access token.
 
     Returns:
-        token: str - created token.
+        access_token: str - created access token.
     """
-    token = security.create_token()
-    token_model = models.Token(token=token, user_id=user.id)
-    db.add(token_model)
+    db.add(access_token)
     db.commit()
-    db.refresh(token_model)
-    return token_model
+    db.refresh(access_token)
+    return access_token
 
 
-def get(db: Session, token: str) -> Union[models.Token, None]:
+def get(db: Session, access_token: str) -> Union[models.AccessToken, None]:
     """
-    Getting acces token row from table by token.
+    Getting acces access token row from table by access token.
 
     Parameters:
         db: Session - database session to deal with.
-        token: str - token.
+        access_token: str - access token.
 
     Returns:
-        token_model: models.Token - token sqlalchemt model.
-        None if there isn't such token.
+        access_token_model: models.Token - access token sqlalchemt model.
+        None if there isn't such access token.
     """
-    return db.query(models.Token).filter(models.Token.token == token).first()
+    return db.query(models.AccessToken).filter(models.AccessToken.token == access_token).first()

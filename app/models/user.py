@@ -17,5 +17,5 @@ class User(Base):
     is_moderator = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
 
-    tokens = relationship("Token", back_populates="user")
+    access_tokens = relationship("AccessToken", back_populates="user")
     added_wiki_pages = relationship("WikiPage", back_populates="rl_added_by_user")

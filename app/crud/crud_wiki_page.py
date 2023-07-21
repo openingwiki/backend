@@ -8,13 +8,13 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 
 
-def create(db: Session, wiki_page: schemas.WikiPageAdd, needs_moderation: bool = True) -> models.WikiPage:
+def create(db: Session, wiki_page: schemas.WikiPageCreate, needs_moderation: bool = True) -> models.WikiPage:
     """
     Adding wiki page into database.
 
     Parameters:
         db: Session - db session to deal with.
-        wiki_page: schemas.WikiPageAdd - pydantic model for requests with wiki page.
+        wiki_page: schemas.WikiPageCreate - pydantic model for requests with wiki page.
         needs_moderation: bool - flag that wiki page needs to be moderated.
 
     Returns:

@@ -13,7 +13,7 @@ if not settings.IS_SETTINGS_FOR_TEST:
     exit()
 
 
-def test_create_user() -> int:
+def test_create_user() -> None:
     """
     Test case for inserting user into database.
 
@@ -52,7 +52,7 @@ def test_get_user() -> None:
     db = SessionLocal()
     test_user_create_schema: UserCreate = random_pydantic_user_create()
 
-    created_user: User = crud_user.create(db, test_user_create_schema)
+    _: User = crud_user.create(db, test_user_create_schema)
     user: User = crud_user.get(db, 1)
 
     assert user.id == 1

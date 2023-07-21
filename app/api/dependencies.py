@@ -49,24 +49,24 @@ def get_redis() -> Generator:
         redis.close()
 
 
-def get_current_user(token: Annotated[str, Cookie()], db: Session = Depends(get_db)) -> models.User:
+def get_current_user(access_token: Annotated[str, Cookie()], db: Session = Depends(get_db)) -> models.User:
     """
-    This dependency injection used for getting user, which has sent requests with token.
+    This dependency injection used for getting user, which has sent requests with access token.
     Token must be stored in cookies.
 
     Parameters:
-        token: Annotated[str, Cookie()] - token from cookie.
+        access_token: Annotated[str, Cookie()] - access token from cookie.
         db: Session - SQLAlchemy session to database, initializing in dependency injection.
 
     Returns:
         user: models.User - user sqlalchemy model.
-        HTTPExecption(401) if invalid token.  
+        HTTPExecption(401) if invalid access token.  
     """
-    token_data: models.Token = crud_access_token.get(db, token)
+    access_token_data: models.Token = crud_access_token.get(db, access_token)
 
-    if not token_data:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token.")
+    if not access_token_data:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid access token.")
 
-    user = crud_user.get(db, user_id=token_data.user_id)
+    user = crud_user.get(db, user_id=access_token_data.user_id)
 
     return user
