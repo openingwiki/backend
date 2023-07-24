@@ -1,3 +1,4 @@
+"""Tests for /wiki_pages requests."""
 from fastapi.testclient import TestClient
 
 from app import redis
@@ -9,7 +10,8 @@ from app.tests.utils import clean_db
 test_client = TestClient(app)
 
 
-def test_add_wiki_page_to_moderationg() -> None:
+def test_add_wiki_page_to_moderation() -> None:
+    """Test case for adding wiki page by usual user."""
     clean_db()
     redis_cache = redis.open_connection()
     redis_cache.flushall()
@@ -32,8 +34,11 @@ def test_add_wiki_page_to_moderationg() -> None:
     assert response.status_code == 200
     assert response_json["sended_to_moderation"] == True
 
+    redis_cache.close()
+
 
 def test_add_wiki_page() -> None:
+    """Test case for adding wiki page by moderator."""
     clean_db()
     db = SessionLocal()
     redis_cache = redis.open_connection()
@@ -58,3 +63,6 @@ def test_add_wiki_page() -> None:
 
     assert response.status_code == 200
     assert response_json["added"] == True
+
+    db.close()
+    redis_cache.close()

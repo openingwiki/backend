@@ -1,7 +1,7 @@
 """
 User pydantic models.
 """
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
@@ -15,36 +15,19 @@ class UserIn(UserBase):
 
 
 class UserCreate(UserIn):
-    """There is password for requests."""
+    """Schema for adding into database."""
 
     nickname: str
 
 
 class UserLogin(UserIn):
-    """There is password for requests."""
+    """Schema for login."""
 
     pass
 
 
-class UserInDB(UserBase):
-    """How user storing in DB."""
-
-    # Model settings.
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    hashed_password: str
-    verified: bool
-    avatar_path: str
-    is_moderator: bool
-    is_admin: bool
-
-
 class UserOut(UserBase):
-    """
-    Response information about user.
-    Password can't be in response.
-    """
+    """Response information about user."""
 
     id: int
     verified: bool

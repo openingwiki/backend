@@ -1,14 +1,15 @@
 """
 CRUD requests for wiki_pages.
 """
-from typing import Union
-
 from sqlalchemy.orm import Session
 
-from app import models, schemas
+from app.models import WikiPage
+from app.schemas import WikiPageCreate
+from app.utils import return_converter
 
 
-def create(db: Session, wiki_page: schemas.WikiPageCreate, needs_moderation: bool = True) -> models.WikiPage:
+@return_converter
+def create(db: Session, wiki_page_schema: WikiPageCreate, needs_moderation: bool = True) -> WikiPage:
     """
     Adding wiki page into database.
 
@@ -18,12 +19,12 @@ def create(db: Session, wiki_page: schemas.WikiPageCreate, needs_moderation: boo
         needs_moderation: bool - flag that wiki page needs to be moderated.
 
     Returns:
-        models.WikiPage - added wiki_page sqlalchemy model.
+        wiki_page: WikiPage - added wiki_page sqlalchemy model.
     """
-    wiki_page_model = models.WikiPage(
-        name=wiki_page.name,
-        youtube_url=wiki_page.youtube_url,
-        added_by_user=wiki_page.added_by_user,
+    wiki_page_model = WikiPage(
+        name=wiki_page_schema.name,
+        youtube_url=wiki_page_schema.youtube_url,
+        added_by_user=wiki_page_schema.added_by_user,
         needs_moderation=needs_moderation,
     )
     db.add(wiki_page_model)

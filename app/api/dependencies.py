@@ -7,10 +7,11 @@ from typing import Annotated, Generator
 from fastapi import Cookie, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app import models
 from app.crud import crud_access_token, crud_user
 from app.db import SessionLocal
+from app.models import AccessToken, User
 from app.redis import open_connection
+from app.schemas import AccessTokenIn
 
 
 def get_db() -> Generator:
@@ -49,7 +50,7 @@ def get_redis() -> Generator:
         redis.close()
 
 
-def get_current_user(access_token: Annotated[str, Cookie()], db: Session = Depends(get_db)) -> models.User:
+def get_current_user(access_token: Annotated[str, Cookie()], db: Session = Depends(get_db)) -> User:
     """
     This dependency injection used for getting user, which has sent requests with access token.
     Token must be stored in cookies.
@@ -60,13 +61,13 @@ def get_current_user(access_token: Annotated[str, Cookie()], db: Session = Depen
 
     Returns:
         user: models.User - user sqlalchemy model.
-        HTTPExecption(401) if invalid access token.  
+        HTTPExecption(401) if invalid access token.
     """
-    access_token_data: models.Token = crud_access_token.get(db, access_token)
+    access_token_data: AccessToken = crud_access_token.get(db, access_token)
 
     if not access_token_data:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid access token.")
 
-    user = crud_user.get(db, user_id=access_token_data.user_id)
+    user: User = crud_user.get(db, user_id=access_token_data.user_id)
 
     return user

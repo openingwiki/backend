@@ -10,8 +10,9 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app import models, schemas
 from app.crud import crud_wiki_page
+from app.models import User
+from app.schemas import WikiPageCreate
 
 from .. import dependencies
 
@@ -20,9 +21,9 @@ router = APIRouter()
 
 @router.post("/add", description="Request for adding wiki_page.")
 async def register(
-    wiki_page_data: Annotated[schemas.WikiPageCreate, Body()],
+    wiki_page_data: Annotated[WikiPageCreate, Body()],
     db: Session = Depends(dependencies.get_db),
-    user: models.User = Depends(dependencies.get_current_user),
+    user: User = Depends(dependencies.get_current_user),
 ):
     """
     Adding wiki pages. Geting user access token from cookie.
@@ -30,9 +31,9 @@ async def register(
     Else request will be sent to moderation.
 
     Parameters:
-        wiki_page_data: Annotated[schemas.WikiPageCreate, Body()] - wiki_page data in body with json
+        wiki_page_data: Annotated[WikiPageCreate, Body()] - wiki_page data in body with json
         db: Session - SQLAlchemy session to database, initializing in dependency injection.
-        user: models.User - user sqlalchemy model, dependency injection gets access token from cookie then user.
+        user: User - user sqlalchemy model, dependency injection gets access token from cookie then user.
 
     Returns:
         Muda json.

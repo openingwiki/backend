@@ -1,7 +1,4 @@
-"""
-WikiPage CRUD testing.
-Tests must be launched in declared order to check every function properly.
-"""
+"""WikiPage CRUD testing."""
 from app.core import settings
 from app.crud import crud_wiki_page
 from app.db import SessionLocal

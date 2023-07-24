@@ -1,3 +1,4 @@
+"""Test cases for /user/register requests"""
 from fastapi.testclient import TestClient
 
 from app.api import app

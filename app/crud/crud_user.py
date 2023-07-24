@@ -5,11 +5,14 @@ from typing import Union
 
 from sqlalchemy.orm import Session
 
-from app import models, schemas
 from app.core import security
+from app.models import User
+from app.schemas import UserCreate
+from app.utils import return_converter
 
 
-def create(db: Session, user: schemas.UserCreate) -> models.User:
+@return_converter
+def create(db: Session, user: UserCreate) -> User:
     """
     Adding user into table.
 
@@ -21,16 +24,15 @@ def create(db: Session, user: schemas.UserCreate) -> models.User:
         user_model: UserInDB - SQLAlchemy model with user data.
     """
     user_hashed_password = security.get_password_hash(user.password)
-    user_model = models.User(
-        email=user.email, hashed_password=user_hashed_password, verified=False, nickname=user.nickname
-    )
+    user_model = User(email=user.email, hashed_password=user_hashed_password, verified=False, nickname=user.nickname)
     db.add(user_model)
     db.commit()
     db.refresh(user_model)
     return user_model
 
 
-def get(db: Session, user_id: int) -> Union[models.User, None]:
+@return_converter
+def get(db: Session, user_id: int) -> Union[User, None]:
     """
     Getting user from table by user id.
 
@@ -42,10 +44,11 @@ def get(db: Session, user_id: int) -> Union[models.User, None]:
         user: user - SQLAlchemy model with user data.
         None - if there isn't such user.
     """
-    return db.query(models.User).filter(models.User.id == user_id).first()
+    return db.query(User).filter(User.id == user_id).first()
 
 
-def get_by_email(db: Session, email: str) -> Union[models.User, None]:
+@return_converter
+def get_by_email(db: Session, email: str) -> Union[User, None]:
     """
     Getting user from table by email.
 
@@ -57,10 +60,11 @@ def get_by_email(db: Session, email: str) -> Union[models.User, None]:
         user: User - SQLAlchemy model with user data.
         None - if there isn't such user.
     """
-    return db.query(models.User).filter(models.User.email == email).first()
+    return db.query(User).filter(User.email == email).first()
 
 
-def set_moderator(db: Session, user: models.User) -> models.User:
+@return_converter
+def set_moderator(db: Session, user: User) -> User:
     """
     Setting user to moderator.
     """
@@ -70,7 +74,8 @@ def set_moderator(db: Session, user: models.User) -> models.User:
     return user
 
 
-def verify(db: Session, user: models.User):
+@return_converter
+def verify(db: Session, user: User) -> User:
     """
     Setting user verified flag to True.
 
@@ -83,3 +88,5 @@ def verify(db: Session, user: models.User):
     """
     user.verified = True
     db.commit()
+    db.refresh(user)
+    return user

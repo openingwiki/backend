@@ -1,7 +1,4 @@
-"""
-User CRUD testing.
-Tests must be launched in declared order to check every function properly.
-"""
+"""User CRUD testing."""
 from app.core import security, settings
 from app.crud import crud_user
 from app.db import SessionLocal
@@ -14,15 +11,7 @@ if not settings.IS_SETTINGS_FOR_TEST:
 
 
 def test_create_user() -> None:
-    """
-    Test case for inserting user into database.
-
-    Parameters:
-        db: Session - database session to deal with.
-
-    Returns:
-        user_id: int - id of added user.
-    """
+    """Test case for inserting user into database."""
     clean_db()
     db = SessionLocal()
     test_user_create_schema: UserCreate = random_pydantic_user_create()
@@ -39,15 +28,7 @@ def test_create_user() -> None:
 
 
 def test_get_user() -> None:
-    """
-    Test case for selecting user from database.
-
-    Parameters:
-        db: Session - database session to deal with.
-
-    Returns:
-        nothing
-    """
+    """Test case for selecting user from database."""
     clean_db()
     db = SessionLocal()
     test_user_create_schema: UserCreate = random_pydantic_user_create()

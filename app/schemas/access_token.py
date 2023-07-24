@@ -21,9 +21,3 @@ class AccessTokenOut(AccessTokenBase):
 
     pass
 
-
-class AccessTokenInDB(AccessTokenBase):
-    """AccessToken in db also stores whose is token."""
-
-    id: int
-    account_id: int

@@ -1,3 +1,4 @@
+"""Test cases for /user/login requests."""
 from fastapi.testclient import TestClient
 
 from app import redis
@@ -21,7 +22,6 @@ def test_user_login() -> None:
 
     response = test_client.post(f"/user/login", json=user_data)
     response_json = response.json()
-
 
     assert response.status_code == 200
     assert response_json["access_token"] == response.cookies.get("access_token")

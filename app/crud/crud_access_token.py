@@ -5,28 +5,33 @@ from typing import Union
 
 from sqlalchemy.orm import Session
 
-from app import models
 from app.core import security
+from app.models import AccessToken, User
+from app.utils import return_converter
 
 
-def create(db: Session, access_token: models.AccessToken) -> models.AccessToken:
+@return_converter
+def create(db: Session, user: User) -> AccessToken:
     """
     Creating access token.
 
     Parameters:
         db: Session - database session to deal with.
-        access_token: models.AccessToken - pydantic model of access token.
+        access_token: AccessToken - pydantic model of access token.
 
     Returns:
         access_token: str - created access token.
     """
-    db.add(access_token)
+    token = security.create_token()
+    created_access_token = AccessToken(token=token, user_id=user.id)
+    db.add(created_access_token)
     db.commit()
-    db.refresh(access_token)
-    return access_token
+    db.refresh(created_access_token)
+    return created_access_token
 
 
-def get(db: Session, access_token: str) -> Union[models.AccessToken, None]:
+@return_converter
+def get(db: Session, access_token: str) -> Union[AccessToken, None]:
     """
     Getting acces access token row from table by access token.
 
@@ -35,7 +40,7 @@ def get(db: Session, access_token: str) -> Union[models.AccessToken, None]:
         access_token: str - access token.
 
     Returns:
-        access_token_model: models.Token - access token sqlalchemt model.
+        access_token_model: AccessToken - access token sqlalchemt model.
         None if there isn't such access token.
     """
-    return db.query(models.AccessToken).filter(models.AccessToken.token == access_token).first()
+    return db.query(AccessToken).filter(AccessToken.token == access_token).first()

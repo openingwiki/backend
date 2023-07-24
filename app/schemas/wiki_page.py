@@ -21,10 +21,4 @@ class WikiPageCreate(WikiPageBase):
 class WikiPageOut(WikiPageBase):
     """WikiPage in response."""
 
-    pass
-
-
-class WikiPageInDB(WikiPageBase):
-    """WikiPage in db."""
-
     id: int

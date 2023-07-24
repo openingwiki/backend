@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     EMAIL_CONFIRM_TOKEN_EXPIRING_SECONDS: int = 0  # 3 hours.
 
     # Redis settings.
-    REDIS_HOST: str = "0"
+    REDIS_HOST: str = ""
     REDIS_PORT: int = 0
 
     # Testing settings.
