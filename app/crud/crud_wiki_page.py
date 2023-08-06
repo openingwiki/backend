@@ -5,10 +5,8 @@ from sqlalchemy.orm import Session
 
 from app.models import WikiPage
 from app.schemas import WikiPageCreate
-from app.utils import return_converter
 
 
-@return_converter
 def create(db: Session, wiki_page_schema: WikiPageCreate, needs_moderation: bool = True) -> WikiPage:
     """
     Adding wiki page into database.

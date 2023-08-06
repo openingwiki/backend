@@ -8,10 +8,8 @@ from app.core import security, settings
 from app.crud import crud_user
 from app.models import User
 from app.schemas import EmailConfirmToken
-from app.utils import return_converter
 
 
-@return_converter
 def create(redis: Redis, user: User) -> EmailConfirmToken:
     """
     Creating email confirm token in redis database.
@@ -30,7 +28,6 @@ def create(redis: Redis, user: User) -> EmailConfirmToken:
     return email_confirm_token
 
 
-@return_converter
 def verify(db: Session, redis: Redis, email_confirm_token: str) -> Union[User, None]:
     """
     Verifying user with token.

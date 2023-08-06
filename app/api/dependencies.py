@@ -11,7 +11,6 @@ from app.crud import crud_access_token, crud_user
 from app.db import SessionLocal
 from app.models import AccessToken, User
 from app.redis import open_connection
-from app.schemas import AccessTokenIn
 
 
 def get_db() -> Generator:

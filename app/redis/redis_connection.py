@@ -2,6 +2,8 @@
 
 from redis import Redis
 
+from app.core.config import settings
+
 
 def open_connection() -> Redis:
     """
@@ -13,5 +15,4 @@ def open_connection() -> Redis:
     Returns:
         database_session: Redis - Redis database session.
     """
-    return Redis(host="localhost", port=6379, decode_responses=True)
-
+    return Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, decode_responses=True)

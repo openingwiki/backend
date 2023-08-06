@@ -8,10 +8,8 @@ from sqlalchemy.orm import Session
 from app.core import security
 from app.models import User
 from app.schemas import UserCreate
-from app.utils import return_converter
 
 
-@return_converter
 def create(db: Session, user: UserCreate) -> User:
     """
     Adding user into table.
@@ -31,7 +29,6 @@ def create(db: Session, user: UserCreate) -> User:
     return user_model
 
 
-@return_converter
 def get(db: Session, user_id: int) -> Union[User, None]:
     """
     Getting user from table by user id.
@@ -47,7 +44,6 @@ def get(db: Session, user_id: int) -> Union[User, None]:
     return db.query(User).filter(User.id == user_id).first()
 
 
-@return_converter
 def get_by_email(db: Session, email: str) -> Union[User, None]:
     """
     Getting user from table by email.
@@ -63,7 +59,6 @@ def get_by_email(db: Session, email: str) -> Union[User, None]:
     return db.query(User).filter(User.email == email).first()
 
 
-@return_converter
 def set_moderator(db: Session, user: User) -> User:
     """
     Setting user to moderator.
@@ -74,7 +69,6 @@ def set_moderator(db: Session, user: User) -> User:
     return user
 
 
-@return_converter
 def verify(db: Session, user: User) -> User:
     """
     Setting user verified flag to True.

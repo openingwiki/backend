@@ -7,10 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.core import security
 from app.models import AccessToken, User
-from app.utils import return_converter
 
 
-@return_converter
 def create(db: Session, user: User) -> AccessToken:
     """
     Creating access token.
@@ -30,7 +28,6 @@ def create(db: Session, user: User) -> AccessToken:
     return created_access_token
 
 
-@return_converter
 def get(db: Session, access_token: str) -> Union[AccessToken, None]:
     """
     Getting acces access token row from table by access token.

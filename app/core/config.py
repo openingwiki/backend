@@ -25,7 +25,6 @@ class Settings(BaseSettings):
     # Redis settings.
     REDIS_HOST: str = ""
     REDIS_PORT: int = 0
-
     # Testing settings.
     IS_SETTINGS_FOR_TEST: bool = True
 

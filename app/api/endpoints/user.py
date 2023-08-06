@@ -44,7 +44,7 @@ async def register(
     user: User = crud_user.create(db, user_data)
 
     # Creating access token to email confirmation.
-    email_confirm_token: EmailConfirmTokenOut = crud_email_confirm_token.create(redis, user, EmailConfirmTokenOut)
+    email_confirm_token: EmailConfirmTokenOut = crud_email_confirm_token.create(redis, user)
     confirmation_link = f"http://{settings.API_DOMAIN}/user/verify?email-confirm-token={email_confirm_token.token}"
 
     # Sending email.
