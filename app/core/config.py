@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     model_config = ConfigDict(case_sensitive=True)
     # API settings.
     API_DOMAIN: str = ""
+    API_REQUEST_PREFIX: str = ""
 
     # Email settings.
     EMAIL_DOMEN_NAME: str = ""

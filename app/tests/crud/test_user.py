@@ -21,8 +21,8 @@ def test_create_user() -> None:
     assert created_user.id == 1  # First user id must be equal 1.
     assert created_user.email == test_user_create_schema.email
     assert created_user.nickname == test_user_create_schema.nickname
-    assert created_user.hashed_password != test_user_create_schema.password
-    assert security.verify_password(test_user_create_schema.password, created_user.hashed_password) == True
+    assert created_user.hashed_password != "password"
+    assert security.verify_password("password", created_user.hashed_password) == True
 
     db.close()
 
@@ -39,6 +39,6 @@ def test_get_user() -> None:
     assert user.id == 1
     assert user.email == test_user_create_schema.email
     assert user.nickname == test_user_create_schema.nickname
-    assert security.verify_password(test_user_create_schema.password, user.hashed_password) == True
+    assert security.verify_password("password", user.hashed_password) == True
 
     db.close()

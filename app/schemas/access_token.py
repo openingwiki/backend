@@ -21,3 +21,8 @@ class AccessTokenOut(AccessTokenBase):
 
     pass
 
+
+class AccessTokenCreate(AccessTokenBase):
+    """Acces token for cruds."""
+
+    user_id: int

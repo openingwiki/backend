@@ -15,7 +15,15 @@ from sqlalchemy.orm import Session
 from app.core import email_sender, security, settings
 from app.crud import crud_access_token, crud_email_confirm_token, crud_user
 from app.models import AccessToken, User
-from app.schemas import EmailConfirmTokenOut, UserCreate, UserLogin
+from app.schemas import (
+    AccessTokenCreate,
+    EmailConfirmToken,
+    EmailConfirmTokenCreate,
+    UserAuth,
+    UserCreate,
+    UserLogin,
+    UserRegister,
+)
 
 from .. import dependencies
 
@@ -24,7 +32,7 @@ router = APIRouter()
 
 @router.post("/register", description="Request for registering user.")
 async def register(
-    user_data: UserCreate,
+    user_data: UserRegister,
     db: Session = Depends(dependencies.get_db),
     redis: Redis = Depends(dependencies.get_redis),
 ):
@@ -40,11 +48,25 @@ async def register(
         (for now)Nothing.
     """
 
+    # Checking that given email doesn't exist.
+    if crud_user.is_user_email(db, user_data.email):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Email already exists.")
+
+    # Checking that given nickname doesn't exist.
+    if crud_user.is_user_nickname(db, user_data.nickname):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Nickname already exists.")
+
     # Adding user to database.
-    user: User = crud_user.create(db, user_data)
+    user_create: UserCreate = UserCreate(
+        email=user_data.email,
+        nickname=user_data.nickname,
+        hashed_password=security.get_password_hash(user_data.password),
+    )
+    user: User = crud_user.create(db, user_create)
 
     # Creating access token to email confirmation.
-    email_confirm_token: EmailConfirmTokenOut = crud_email_confirm_token.create(redis, user)
+    email_confirm_token_create = EmailConfirmTokenCreate(user_id=user.id, token=security.create_token())
+    email_confirm_token: EmailConfirmToken = crud_email_confirm_token.create(redis, email_confirm_token_create)
     confirmation_link = f"http://{settings.API_DOMAIN}/user/verify?email-confirm-token={email_confirm_token.token}"
 
     # Sending email.
@@ -81,16 +103,17 @@ async def verify(
         JSON with access token info.
         HTTPException 401 - Invalid token. Token also might be expired.
     """
-    user = crud_email_confirm_token.verify(db, redis, email_confirm_token)
+    user_id = crud_email_confirm_token.verify(redis, email_confirm_token)
 
     # Exception if email confirmation token doesn't exist.
-    if not user:
+    if not user_id:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid email confirmation token")
 
-    user = crud_user.get(db, user_id=user.id)
+    user = crud_user.get(db, user_id)
     crud_user.verify(db, user)
 
-    access_token: AccessToken = crud_access_token.create(db, user)
+    access_token_create = AccessTokenCreate(token=security.create_token(), user_id=user.id)
+    access_token: AccessToken = crud_access_token.create(db, access_token_create)
     response.set_cookie("access_token", access_token.token)
     return {"access_token": access_token.token}
 
@@ -120,6 +143,7 @@ async def login(*, response: Response, db: Session = Depends(dependencies.get_db
     if not is_password_correct:  # Exception if password doesn't match with password hash.
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
-    access_token: AccessToken = crud_access_token.create(db, user)
+    access_token_create = AccessTokenCreate(token=security.create_token(), user_id=user.id)
+    access_token: AccessToken = crud_access_token.create(db, access_token_create)
     response.set_cookie("access_token", access_token.token)
     return {"access_token": access_token.token}

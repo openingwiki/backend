@@ -1,5 +1,15 @@
 """Backend can be launched only from here, cause of import errors."""
-from app.api import app
+# Importing API routers.
+from fastapi import FastAPI
+
+from app.api import api_router
+from app.core import settings
+
+app = FastAPI()
+app.include_router(api_router, prefix=settings.API_REQUEST_PREFIX)
+
+
+# Importing and initing database.
 from app.db import Base, engine
 
 Base.metadata.create_all(bind=engine)

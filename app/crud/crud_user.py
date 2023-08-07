@@ -5,82 +5,73 @@ from typing import Union
 
 from sqlalchemy.orm import Session
 
-from app.core import security
+from app.crud.base import CRUDBase
 from app.models import User
 from app.schemas import UserCreate
 
 
-def create(db: Session, user: UserCreate) -> User:
-    """
-    Adding user into table.
+class CRUDUser(CRUDBase[User, UserCreate]):
+    def __init__(self, Model: type[User]):
+        super().__init__(Model)
 
-    Parameters:
-        db: Session - db session to deal with.
-        user: UserIn - user pydantic model.
+    def get_by_email(self, db: Session, email: str) -> Union[User, None]:
+        """
+        Getting user from table by email.
 
-    Returns:
-        user_model: UserInDB - SQLAlchemy model with user data.
-    """
-    user_hashed_password = security.get_password_hash(user.password)
-    user_model = User(email=user.email, hashed_password=user_hashed_password, verified=False, nickname=user.nickname)
-    db.add(user_model)
-    db.commit()
-    db.refresh(user_model)
-    return user_model
+        Parameters:
+            db: Session - db session to deal with.
+            email: str - email of user to get.
 
+        Returns:
+            user: User - SQLAlchemy model with user data.
+            None - if there isn't such user.
+        """
+        return db.query(User).filter(User.email == email).first()
 
-def get(db: Session, user_id: int) -> Union[User, None]:
-    """
-    Getting user from table by user id.
+    def get_by_nickname(self, db: Session, nickname: str) -> Union[User, None]:
+        """
+        Getting user from table by nickname.
 
-    Parameters:
-        db: Session - db session to deal with.
-        user_id: int - user id of user to get.
+        Parameters:
+            db: Session - db session to deal with.
+            nickname: str - nickname of user to get.
 
-    Returns:
-        user: user - SQLAlchemy model with user data.
-        None - if there isn't such user.
-    """
-    return db.query(User).filter(User.id == user_id).first()
+        Returns:
+            user: User - SQLAlchemy model with user data.
+            None - if there isn't such user.
+        """
+        return db.query(User).filter(User.nickname == nickname).first()
 
+    def set_moderator(self, db: Session, user: User) -> User:
+        """
+        Setting user to moderator.
+        """
+        user.is_moderator = True
+        db.commit()
+        db.refresh(user)
+        return user
 
-def get_by_email(db: Session, email: str) -> Union[User, None]:
-    """
-    Getting user from table by email.
+    def verify(self, db: Session, user: User) -> User:
+        """
+        Setting user verified flag to True.
 
-    Parameters:
-        db: Session - db session to deal with.
-        email: int - email of user ot get.
+        Parameters:
+            db: Session - db session to deal with.
+            user: User - user SQLAlchemy model.
 
-    Returns:
-        user: User - SQLAlchemy model with user data.
-        None - if there isn't such user.
-    """
-    return db.query(User).filter(User.email == email).first()
+        Returns
+            Nothing
+        """
+        user.verified = True
+        db.commit()
+        db.refresh(user)
+        return user
 
+    def is_user_email(self, db: Session, email: str) -> bool:
+        """"""
+        user: User | None = self.get_by_email(db, email)
+        return bool(user)
 
-def set_moderator(db: Session, user: User) -> User:
-    """
-    Setting user to moderator.
-    """
-    user.is_moderator = True
-    db.commit()
-    db.refresh(user)
-    return user
-
-
-def verify(db: Session, user: User) -> User:
-    """
-    Setting user verified flag to True.
-
-    Parameters:
-        db: Session - db session to deal with.
-        user: User - user SQLAlchemy model.
-
-    Returns
-        Nothing
-    """
-    user.verified = True
-    db.commit()
-    db.refresh(user)
-    return user
+    def is_user_nickname(self, db: Session, nickname: str) -> bool:
+        user: User | None = self.get_by_nickname(db, nickname)
+        return bool(user)

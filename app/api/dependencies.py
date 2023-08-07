@@ -5,6 +5,7 @@ Dependencies for FastAPI dependency injection system.
 from typing import Annotated, Generator
 
 from fastapi import Cookie, Depends, HTTPException, status
+from redis import Redis
 from sqlalchemy.orm import Session
 
 from app.crud import crud_access_token, crud_user
@@ -43,7 +44,7 @@ def get_redis() -> Generator:
         redis: Redis - redis session.
     """
     try:
-        redis = open_connection()
+        redis: Redis = open_connection()
         yield redis
     finally:
         redis.close()
@@ -62,11 +63,11 @@ def get_current_user(access_token: Annotated[str, Cookie()], db: Session = Depen
         user: models.User - user sqlalchemy model.
         HTTPExecption(401) if invalid access token.
     """
-    access_token_data: AccessToken = crud_access_token.get(db, access_token)
+    access_token_data: AccessToken = crud_access_token.get_by_access_token(db, access_token)
 
     if not access_token_data:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid access token.")
 
-    user: User = crud_user.get(db, user_id=access_token_data.user_id)
+    user: User = crud_user.get(db, access_token_data.user_id)
 
     return user

@@ -1,11 +1,14 @@
 """Test cases for /user/login requests."""
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from app import redis
-from app.api import app
+from app.api import api_router
 from app.core import settings
 from app.tests.utils import clean_db
 
+app = FastAPI()
+app.include_router(api_router)
 test_client = TestClient(app)
 
 

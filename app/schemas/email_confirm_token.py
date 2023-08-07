@@ -22,6 +22,12 @@ class EmailConfirmTokenOut(EmailConfirmTokenBase):
     pass
 
 
+class EmailConfirmTokenCreate(EmailConfirmTokenBase):
+    """Requests can contain only token."""
+
+    user_id: int
+
+
 class EmailConfirmToken(EmailConfirmTokenBase):
     """
     Spicific schema for email confirm token, because there is no sqlalchemy, because it stores in redis.

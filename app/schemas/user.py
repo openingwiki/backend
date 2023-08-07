@@ -10,17 +10,24 @@ class UserBase(BaseModel):
     email: EmailStr
 
 
-class UserIn(UserBase):
+class UserAuth(UserBase):
     password: str
 
 
-class UserCreate(UserIn):
-    """Schema for adding into database."""
+class UserRegister(UserAuth):
+    """Schema for getting register request."""
 
     nickname: str
 
 
-class UserLogin(UserIn):
+class UserCreate(UserBase):
+    """Schema for adding into database."""
+
+    nickname: str
+    hashed_password: str
+
+
+class UserLogin(UserAuth):
     """Schema for login."""
 
     pass
