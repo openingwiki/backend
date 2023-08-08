@@ -7,12 +7,12 @@ POST /wiki_pages/add - add wiki_page
 """
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.crud import crud_wiki_page
-from app.models import User
-from app.schemas import WikiPageCreate
+from app.models import User, WikiPage
+from app.schemas import WikiPageCreate, WikiPageOut
 
 from .. import dependencies
 
@@ -38,17 +38,37 @@ async def register(
     Returns:
         Muda json.
     """
-    if not user:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
-
     if user.is_moderator:
         wiki_page_data.added_by_user = user.id
         wiki_page_data.needs_moderation = False
         crud_wiki_page.create(db, wiki_page_data)
-        return {"added": True}
+        return {"added": True, "sended_to_moderation": True}
 
     else:
         wiki_page_data.added_by_user = user.id
         # Needs moderation field is True by default.
         crud_wiki_page.create(db, wiki_page_data)
-        return {"sended_to_moderation": True}
+        return {"added": True, "sended_to_moderation": True}
+
+
+@router.get(
+    "/last_added_wiki_pages", description="Request for getting last added wiki pages.", response_model=list[WikiPageOut]
+)
+async def get_last_added_wiki_pages(
+    limit: Annotated[int, Query(gt=0, le=100)],
+    db: Session = Depends(dependencies.get_db),
+    user: User = Depends(dependencies.get_current_user),
+):
+    """
+    Getting last added wiki pages.
+
+    Parameters:
+        limit: Annotated[int, Query(gt=0, le=100)] - count of last added wiki pags, must be > 0 and <= 100.
+        db: Session - SQLAlchemy session to database, initializing in dependency injection.
+        user: User - user sqlalchemy model, dependency injection gets access token from cookie then user.
+
+    Returns:
+        Muda json.
+    """
+    last_added_wiki_pages: list[WikiPage] = crud_wiki_page.get_last_added(db, limit=limit)
+    return last_added_wiki_pages

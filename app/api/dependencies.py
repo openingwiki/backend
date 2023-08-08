@@ -70,4 +70,7 @@ def get_current_user(access_token: Annotated[str, Cookie()], db: Session = Depen
 
     user: User = crud_user.get(db, access_token_data.user_id)
 
+    if not user:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
+
     return user

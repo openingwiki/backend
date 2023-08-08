@@ -28,3 +28,4 @@ class WikiPageOut(WikiPageBase):
     """WikiPage in response."""
 
     id: int
+    added_by_user: int | None = None

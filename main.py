@@ -10,6 +10,9 @@ app.include_router(api_router, prefix=settings.API_REQUEST_PREFIX)
 
 
 # Importing and initing database.
-from app.db import Base, engine
+from app.db import SessionLocal
+from app.db.init_db import init_db
 
-Base.metadata.create_all(bind=engine)
+db = SessionLocal()
+init_db(db)
+db.close()
