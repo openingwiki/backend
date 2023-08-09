@@ -74,3 +74,49 @@ def get_current_user(access_token: Annotated[str, Cookie()], db: Session = Depen
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
 
     return user
+
+
+def get_current_moderator(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> User:
+    """
+    The same function as get_current_user, but checks, that user is moderator.
+
+    Parameters:
+        user: User - user from whom request was sended, getting from dependency injection.
+        db: Session - SQLAlchemy session to database, initializing in dependency injection.
+
+    Raises:
+        HTTPException(403) if user isn't moderator.
+
+    Returns:
+        user: models.User - user sqlalchemy model.
+    """
+    if not user.is_moderator:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User isn't admin.")
+
+    return user
+
+
+def get_current_admin(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> User:
+    """
+    The same function as get_current_user, but checks, that user is admin.
+
+    Parameters:
+        user: User - user from whom request was sended, getting from dependency injection.
+        db: Session - SQLAlchemy session to database, initializing in dependency injection.
+
+    Raises:
+        HTTPException(403) if user isn't admin.
+
+    Returns:
+        user: models.User - user sqlalchemy model.
+    """
+    if not user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User isn't admin.")
+
+    return user

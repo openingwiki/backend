@@ -10,6 +10,6 @@ class AccessToken(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    token = Column(String, index=True)
+    token = Column(String, index=True, unique=True)
 
     user = relationship("User", back_populates="access_tokens")
