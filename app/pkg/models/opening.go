@@ -11,10 +11,10 @@ type Opening struct {
 }
 
 type OpeningOut struct {
-	Id               uint64 `json: id`
-	Name             string `json: name`
-	Codename         string `json: codename`
-	AnimeName        string `json: "anime_name"`
-	YoutubeEmbedLink string `json: "youtube_embed_link"`
-	ThumbnailLink    string `json: "thumbnail_link"`
+	Id               uint64 `json:"id"`
+	Name             string `json:"name"`
+	Codename         string `json:"codename"`
+	AnimeName        string `json:"anime_name"`
+	YoutubeEmbedLink string `json:"youtube_embed_link"`
+	ThumbnailLink    string `json:"thumbnail_link"`
 }

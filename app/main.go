@@ -46,3 +46,7 @@ func getOpenings(c *fiber.Ctx) error {
 
 	return c.JSON(resultOpenings)
 }
+
+// func getOpening(c *fiber.Ctx) error {
+// 	pathParameters
+// }
