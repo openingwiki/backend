@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/go-playground/validator/v10"
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/openingwiki/backend/pkg/models"
@@ -21,6 +23,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/openings", getOpenings)
+	app.Get("/openings/:codename", getOpening)
 
 	app.Listen(":8080")
 }
@@ -38,7 +41,7 @@ func getOpenings(c *fiber.Ctx) error {
 		})
 	}
 
-	var resultOpenings []models.OpeningOut
+	resultOpenings := []models.OpeningOut{}
 
 	for i := queryParameters.Offset; i < i+queryParameters.Limit && i < len(openings); i++ {
 		resultOpenings = append(resultOpenings, openings[i])
@@ -47,6 +50,17 @@ func getOpenings(c *fiber.Ctx) error {
 	return c.JSON(resultOpenings)
 }
 
-// func getOpening(c *fiber.Ctx) error {
-// 	pathParameters
-// }
+func getOpening(c *fiber.Ctx) error {
+	codename := c.Params("codename")
+
+	if codename == "" {
+		return c.Status(fiber.StatusBadRequest).JSON("Хуйню не делай.")
+	}
+
+	for _, opening := range openings {
+		if strings.EqualFold(codename, opening.Codename) {
+			return c.JSON(opening)
+		}
+	}
+	return nil
+}
