@@ -5,6 +5,8 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	fiber "github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
+	_ "github.com/openingwiki/backend/docs" // Import the generated docs
 	"github.com/openingwiki/backend/pkg/models"
 )
 
@@ -22,12 +24,27 @@ type GetOpeningsQueryParameters struct {
 func main() {
 	app := fiber.New()
 
+	// Docs route.
+	app.Get("/docs/*", swagger.HandlerDefault)
+
 	app.Get("/openings", getOpenings)
 	app.Get("/openings/:codename", getOpening)
 
 	app.Listen(":8080")
 }
 
+// getOpenings godoc
+// @Summary      Get list of openings by limit and offset
+// @Description  Get list of openings by limit and offset
+// @Tags         openings
+// @Accept       json
+// @Produce      json
+// @Param        limit   query     int  false  "Count of resulting rows"
+// @Param 		 offset  query	   int	false  "Offset of the query"
+// @Success      200 	 {object}  []models.OpeningOut
+// @Failure		 400
+// @Failure		 500
+// @Router       /openings [get]
 func getOpenings(c *fiber.Ctx) error {
 	queryParameters := new(GetOpeningsQueryParameters)
 
@@ -50,6 +67,17 @@ func getOpenings(c *fiber.Ctx) error {
 	return c.JSON(resultOpenings)
 }
 
+// getOpening godoc
+// @Summary      Get one opening by its codename
+// @Description  Get one opening by its codename
+// @Tags         openings
+// @Accept       json
+// @Produce      json
+// @Param        codename   path     string  true  "Codename of opening to get"
+// @Success      200  {object}  models.OpeningOut
+// @Failure 	 400
+// @Failure 	 500
+// @Router       /openings/{codename} [get]
 func getOpening(c *fiber.Ctx) error {
 	codename := c.Params("codename")
 

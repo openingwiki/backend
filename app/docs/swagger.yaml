@@ -1,0 +1,75 @@
+definitions:
+  models.OpeningOut:
+    properties:
+      anime_name:
+        type: string
+      codename:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      thumbnail_link:
+        type: string
+      youtube_embed_link:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /openings:
+    get:
+      consumes:
+      - application/json
+      description: Get list of openings by limit and offset
+      parameters:
+      - description: Count of resulting rows
+        in: query
+        name: limit
+        type: integer
+      - description: Offset of the query
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.OpeningOut'
+            type: array
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get list of openings by limit and offset
+      tags:
+      - openings
+  /openings/{codename}:
+    get:
+      consumes:
+      - application/json
+      description: Get one opening by its codename
+      parameters:
+      - description: Codename of opening to get
+        in: path
+        name: codename
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OpeningOut'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get one opening by its codename
+      tags:
+      - openings
+swagger: "2.0"
