@@ -12,18 +12,18 @@ func ConnectToDatabase() *sql.DB {
 	envVars, err := godotenv.Read()
 
 	if err != nil {
-		log.Fatal("Error loading .env file.")
+		log.Fatal("Error loading .env file:", err)
 	}
 
 	var databaseUrl string = envVars["DATABASE_URL"]
 	db, err := sql.Open("postgres", databaseUrl)
 
 	if err != nil {
-		log.Fatal("Eror connecting to database.")
+		log.Fatal("Eror connecting to database:", err)
 	}
 
 	if err := db.Ping(); err != nil {
-		log.Fatal("Failed to ping db.")
+		log.Fatal("Failed to ping db:", err)
 	}
 
 	return db
