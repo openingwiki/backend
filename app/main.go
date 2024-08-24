@@ -6,8 +6,9 @@ import (
 	"github.com/go-playground/validator/v10"
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
+	"github.com/openingwiki/backend/database"
 	_ "github.com/openingwiki/backend/docs" // Import the generated docs
-	"github.com/openingwiki/backend/pkg/models"
+	"github.com/openingwiki/backend/models"
 )
 
 var openings = [2]models.OpeningOut{
@@ -22,6 +23,11 @@ type GetOpeningsQueryParameters struct {
 }
 
 func main() {
+	// Init database.
+	db := database.ConnectToDatabase()
+	defer db.Close()
+	database.CreateTables(db)
+
 	app := fiber.New()
 
 	// Docs route.
@@ -82,7 +88,7 @@ func getOpening(c *fiber.Ctx) error {
 	codename := c.Params("codename")
 
 	if codename == "" {
-		return c.Status(fiber.StatusBadRequest).JSON("Хуйню не делай.")
+		return c.Status(fiber.StatusBadRequest).JSON("Фигнбю не делай.")
 	}
 
 	for _, opening := range openings {
