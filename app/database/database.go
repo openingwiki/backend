@@ -48,4 +48,24 @@ func createAnimeTable(db *sql.DB) {
 }
 
 func createOpeningsTable(db *sql.DB) {
+	query := `
+	CREATE TABLE IF NOT EXISTS openings (
+		id SERIAL PRIMARY KEY,
+		anime_id INTEGER,
+		name TEXT NOT NULL,
+		codename TEXT UNIQUE,
+		youtube_embed_link TEXT,
+		thumbnail_link TEXT,
+
+		CONSTRAINT fk_anime FOREIGN KEY (anime_id)
+        REFERENCES anime (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+	)`
+
+	_, err := db.Exec(query)
+
+	if err != nil {
+		log.Fatal("Erorr creating openings table:", err)
+	}
 }
