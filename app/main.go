@@ -96,5 +96,6 @@ func getOpening(c *fiber.Ctx) error {
 			return c.JSON(opening)
 		}
 	}
-	return nil
+
+	return c.Status(fiber.StatusNotFound).JSON("Opening not found")
 }
