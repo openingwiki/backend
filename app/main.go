@@ -82,6 +82,7 @@ func getOpenings(c *fiber.Ctx) error {
 // @Param        codename   path     string  true  "Codename of opening to get"
 // @Success      200  {object}  models.OpeningOut
 // @Failure 	 400
+// @Failure		 404
 // @Failure 	 500
 // @Router       /openings/{codename} [get]
 func getOpening(c *fiber.Ctx) error {

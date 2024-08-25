@@ -67,6 +67,8 @@ paths:
             $ref: '#/definitions/models.OpeningOut'
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Get one opening by its codename
