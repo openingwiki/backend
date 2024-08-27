@@ -22,7 +22,9 @@ func main() {
 	app.Get("/openings", func(c fiber.Ctx) error {
 		return handlers.GetOpenings(c, db)
 	})
-	// app.Get("/openings/:codename", handlers.GetOpening)
+	app.Get("/openings/:codename", func(c fiber.Ctx) error {
+		return handlers.GetOpening(c, db)
+	})
 
 	app.Listen(":8080")
 }

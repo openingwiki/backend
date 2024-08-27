@@ -59,18 +59,18 @@ func GetOpenings(c fiber.Ctx, db *sql.DB) error {
 // @Failure		 404
 // @Failure 	 500
 // @Router       /openings/{codename} [get]
-// func GetOpening(c fiber.Ctx) error {
-// 	codename := c.Params("codename")
+func GetOpening(c fiber.Ctx, db *sql.DB) error {
+	codename := c.Params("codename")
 
-// 	if codename == "" {
-// 		return c.Status(fiber.StatusBadRequest).JSON("Фигнбю не делай.")
-// 	}
+	if codename == "" {
+		return c.Status(fiber.StatusBadRequest).JSON("Фигнбю не делай.")
+	}
 
-// 	for _, opening := range openings {
-// 		if strings.EqualFold(codename, opening.Codename) {
-// 			return c.JSON(opening)
-// 		}
-// 	}
+	opening := crud.GetOpeningOut(db, codename)
 
-// 	return c.Status(fiber.StatusNotFound).JSON("Opening not found")
-// }
+	if opening == nil {
+		return c.Status(fiber.StatusNotFound).JSON("Opening doesn't found.")
+	}
+
+	return c.Status(fiber.StatusOK).JSON(opening)
+}
