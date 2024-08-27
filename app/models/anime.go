@@ -1,6 +1,6 @@
 package models
 
 type Anime struct {
-	id   uint64
-	name string
+	ID   uint64
+	Name string
 }

@@ -51,8 +51,8 @@ func createOpeningsTable(db *sql.DB) {
 	query := `
 	CREATE TABLE IF NOT EXISTS openings (
 		id SERIAL PRIMARY KEY,
-		anime_id INTEGER,
 		name TEXT NOT NULL,
+		anime_id INTEGER,
 		codename TEXT UNIQUE,
 		youtube_embed_link TEXT,
 		thumbnail_link TEXT,

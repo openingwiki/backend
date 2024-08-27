@@ -1,17 +1,16 @@
 package models
 
 type Opening struct {
-	id               uint64
-	name             string
-	animeId          uint64
-	codename         string
-	codenameLower    string
-	youtubeEmbedLink string
-	thumbnailLink    string
+	ID               uint64
+	Name             string
+	AnimeId          uint64
+	Codename         string
+	YoutubeEmbedLink string
+	ThumbnailLink    string
 }
 
 type OpeningOut struct {
-	Id               uint64 `json:"id"`
+	ID               uint64 `json:"id"`
 	Name             string `json:"name"`
 	Codename         string `json:"codename"`
 	AnimeName        string `json:"anime_name"`
