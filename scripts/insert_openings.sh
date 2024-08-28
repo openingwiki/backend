@@ -3,8 +3,7 @@
 SQL_FILE="insert_data.sql"
 
 # Execute the SQL file
-PGPASSWORD=$DB_PASSWORD
-psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c \
+psql $DATABASE_URL -c \
 "
 INSERT INTO anime (name) VALUES ('JoJo''s Bizzare Adventure');
 INSERT INTO anime (name) VALUES ('Tokyo Ghoul');
