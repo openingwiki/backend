@@ -32,6 +32,7 @@ func ConnectToDatabase() *sql.DB {
 func CreateTables(db *sql.DB) {
 	createAnimeTable(db)
 	createOpeningsTable(db)
+	createUsersTable(db)
 }
 
 func createAnimeTable(db *sql.DB) {
@@ -67,5 +68,21 @@ func createOpeningsTable(db *sql.DB) {
 
 	if err != nil {
 		log.Fatal("Erorr creating openings table:", err)
+	}
+}
+
+func createUsersTable(db *sql.DB) {
+	query := `
+	CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY,
+		username TEXT NOT NULL UNIQUE,
+		password_hash TEXT NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	)`
+
+	_, err := db.Exec(query)
+
+	if err != nil {
+		log.Fatal("Erorr creating users table:", err)
 	}
 }

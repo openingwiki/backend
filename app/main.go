@@ -26,5 +26,9 @@ func main() {
 		return handlers.GetOpening(c, db)
 	})
 
+	app.Post("/register", func(c fiber.Ctx) error {
+		return handlers.Register(c, db)
+	})
+
 	app.Listen(":8080")
 }

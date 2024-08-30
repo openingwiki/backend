@@ -5,12 +5,9 @@ import (
 
 	"database/sql"
 
-	"github.com/go-playground/validator"
 	fiber "github.com/gofiber/fiber/v3"
 	"github.com/openingwiki/backend/crud"
 )
-
-var validate = validator.New()
 
 type GetOpeningsQueryParameters struct {
 	Limit  int `query:"limit" validate:"gte=0,max=20"`
@@ -66,9 +63,9 @@ func GetOpening(c fiber.Ctx, db *sql.DB) error {
 		return c.Status(fiber.StatusBadRequest).JSON("Фигнбю не делай.")
 	}
 
-	opening := crud.GetOpeningOut(db, codename)
+	opening, err := crud.GetOpeningOut(db, codename)
 
-	if opening == nil {
+	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON("Opening doesn't found.")
 	}
 
