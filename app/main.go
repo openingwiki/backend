@@ -29,6 +29,9 @@ func main() {
 	app.Post("/register", func(c fiber.Ctx) error {
 		return handlers.Register(c, db)
 	})
+	app.Post("/auth", func(c fiber.Ctx) error {
+		return handlers.Autrhorize(c, db)
+	})
 
 	app.Listen(":8080")
 }

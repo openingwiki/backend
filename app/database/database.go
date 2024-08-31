@@ -33,6 +33,7 @@ func CreateTables(db *sql.DB) {
 	createAnimeTable(db)
 	createOpeningsTable(db)
 	createUsersTable(db)
+	createAccessTokensTable(db)
 }
 
 func createAnimeTable(db *sql.DB) {
@@ -84,5 +85,26 @@ func createUsersTable(db *sql.DB) {
 
 	if err != nil {
 		log.Fatal("Erorr creating users table:", err)
+	}
+}
+
+func createAccessTokensTable(db *sql.DB) {
+	query := `
+	CREATE TABLE IF NOT EXISTS access_tokens (
+		id SERIAL PRIMARY KEY,
+		user_id INTEGER,
+		token TEXT,
+
+		CONSTRAINT fk_user FOREIGN KEY (user_id)
+        REFERENCES users (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+	)
+	`
+
+	_, err := db.Exec(query)
+
+	if err != nil {
+		log.Fatal("Erorr creating access tokens table:", err)
 	}
 }

@@ -10,9 +10,14 @@ import (
 )
 
 type RegistrationBody struct {
-	Username string `json:"username" validate:"required"`
+	Username string `json:"username" validate:"required,min=1,max=20"`
 	// display_name string `validate: min=1, max=20`
-	Password string `json"password" validate:"required"`
+	Password string `json:"password" validate:"required,min=1,max=20"`
+}
+
+type AuthBody struct {
+	Username string `json:"username" validate:"required,min=1,max=20"`
+	Password string `json:"password" validate:"required,min=1,max=20"`
 }
 
 // getOpening godoc
@@ -53,5 +58,41 @@ func Register(c fiber.Ctx, db *sql.DB) error {
 	return c.Status(fiber.StatusCreated).JSON(user)
 }
 
-func Autrhorize(c fiber.Ctx, db *sql.DB) {
+func Autrhorize(c fiber.Ctx, db *sql.DB) error {
+	userAuthData := new(AuthBody)
+
+	if err := c.Bind().Body(userAuthData); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid body parameters",
+		})
+	}
+
+	if err := validate.Struct(userAuthData); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	user, err := crud.GetUserByUsername(db, userAuthData.Username)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).SendString("Wrong credentials")
+	}
+
+	fmt.Println(userAuthData)
+	// Checking that password is correct.
+	hashedPassword, _ := security.HashPassword(userAuthData.Password)
+	if err := security.ComparePassword(hashedPassword, userAuthData.Password); err != nil {
+		return c.Status(fiber.StatusUnauthorized).SendString("Wrong credentials")
+	}
+
+	// Creating token.
+	tokenStr, _ := security.GenerateToken(256)
+
+	token, err := crud.CreateToken(db, user.ID, tokenStr)
+
+	if err != nil {
+		return c.Status(fiber.StatusTeapot).SendString("Something wrong on server side...")
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(token)
 }

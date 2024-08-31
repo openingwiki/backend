@@ -2,6 +2,7 @@ package crud
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	sq "github.com/Masterminds/squirrel"
@@ -10,13 +11,15 @@ import (
 
 func GetUserByUsername(db *sql.DB, username string) (*models.User, error) {
 	neededColumns := "id, username, password_hash"
-	query := sq.Select(neededColumns).From("users").Where(sq.Eq{"username": username})
+	query := sq.Select(neededColumns).From("users").Where(sq.Eq{"username": username}).PlaceholderFormat(sq.Dollar)
 
 	row := query.RunWith(db).QueryRow()
+	fmt.Println(query.ToSql())
 
 	var user models.User
 
 	if err := row.Scan(&user.ID, &user.Username, &user.PasswordHash); err != nil {
+		log.Println("Error while checking if user exists:", err)
 		return nil, err
 	}
 
@@ -25,7 +28,6 @@ func GetUserByUsername(db *sql.DB, username string) (*models.User, error) {
 
 func CreateUser(db *sql.DB, username string, password_hash string) (*models.UserOut, error) {
 	query := sq.Insert("users").Columns("username", "password_hash").Values(username, password_hash).Suffix("RETURNING id, username").PlaceholderFormat(sq.Dollar)
-	log.Println(query.ToSql())
 
 	row := query.RunWith(db).QueryRow()
 	var user models.UserOut
