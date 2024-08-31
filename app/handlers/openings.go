@@ -60,7 +60,7 @@ func GetOpening(c fiber.Ctx, db *sql.DB) error {
 	codename := c.Params("codename")
 
 	if codename == "" {
-		return c.Status(fiber.StatusBadRequest).JSON("Фигнбю не делай.")
+		return c.Status(fiber.StatusBadRequest).JSON("Не передан codename")
 	}
 
 	opening, err := crud.GetOpeningOut(db, codename)

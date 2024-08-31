@@ -19,7 +19,7 @@ type AuthBody struct {
 	Password string `json:"password" validate:"required,min=1,max=20"`
 }
 
-// getOpening godoc
+// Register godoc
 // @Summary      Register user
 // @Description  Register user
 // @Tags         auth
@@ -27,7 +27,7 @@ type AuthBody struct {
 // @Produce      json
 // @Param        username   body     string  true  "Username"
 // @Param 		 password 	body	 string  true  "Password"
-// @Success      201  {object}  models.UserOut
+// @Success      201  {object}  models.AccessTokenOut
 // @Failure 	 400
 // @Failure 	 500
 // @Router       /register [post]
@@ -65,6 +65,18 @@ func Register(c fiber.Ctx, db *sql.DB) error {
 	return c.Status(fiber.StatusCreated).JSON(token)
 }
 
+// Auth godoc
+// @Summary      Authorize user
+// @Description  Authorize user
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        username   body     string  true  "Username"
+// @Param 		 password 	body	 string  true  "Password"
+// @Success      200  {object}  models.AccessTokenOut
+// @Failure 	 400
+// @Failure 	 500
+// @Router       /auth [post]
 func Autrhorize(c fiber.Ctx, db *sql.DB) error {
 	userAuthData := new(AuthBody)
 

@@ -33,5 +33,9 @@ func main() {
 		return handlers.Autrhorize(c, db)
 	})
 
+	app.Get("/profile/:username", func(c fiber.Ctx) error {
+		return handlers.GetProfileByUsername(c, db)
+	})
+
 	app.Listen(":8080")
 }
