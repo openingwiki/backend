@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"fmt"
 
 	fiber "github.com/gofiber/fiber/v3"
 	"github.com/openingwiki/backend/crud"
@@ -48,14 +47,22 @@ func Register(c fiber.Ctx, db *sql.DB) error {
 	}
 
 	hashedPassword, _ := security.HashPassword(userRegisterData.Password)
-	fmt.Println(userRegisterData.Username, userRegisterData.Password)
 	user, err := crud.CreateUser(db, userRegisterData.Username, hashedPassword)
 
 	if err != nil {
 		return c.Status(fiber.StatusConflict).SendString("User already eixsts")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(user)
+	// Creating token.
+	tokenStr, _ := security.GenerateToken(256)
+
+	token, err := crud.CreateToken(db, user.ID, tokenStr)
+
+	if err != nil {
+		return c.Status(fiber.StatusTeapot).SendString("Something wrong on server side...")
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(token)
 }
 
 func Autrhorize(c fiber.Ctx, db *sql.DB) error {
@@ -78,7 +85,6 @@ func Autrhorize(c fiber.Ctx, db *sql.DB) error {
 		return c.Status(fiber.StatusUnauthorized).SendString("Wrong credentials")
 	}
 
-	fmt.Println(userAuthData)
 	// Checking that password is correct.
 	hashedPassword, _ := security.HashPassword(userAuthData.Password)
 	if err := security.ComparePassword(hashedPassword, userAuthData.Password); err != nil {
