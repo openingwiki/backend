@@ -1,8 +1,7 @@
 #!/bin/bash
 # File containing SQL commands
-SQL_FILE="insert_data.sql"
-
 # Execute the SQL file
+echo $DATABASE_URL
 psql $DATABASE_URL -c \
 "
 INSERT INTO anime (name) VALUES ('JoJo''s Bizzare Adventure');
