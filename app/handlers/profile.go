@@ -3,7 +3,7 @@ package handlers
 import (
 	"database/sql"
 
-	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v2"
 	"github.com/openingwiki/backend/crud"
 	"github.com/openingwiki/backend/models"
 )
@@ -20,7 +20,7 @@ import (
 // @Failure		 404
 // @Failure 	 500
 // @Router       /profile/{username} [get]
-func GetProfileByUsername(c fiber.Ctx, db *sql.DB) error {
+func GetProfileByUsername(c *fiber.Ctx, db *sql.DB) error {
 	// Parsing username from query parameter.
 	username := c.Params("username")
 	if username == "" {

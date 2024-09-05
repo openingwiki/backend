@@ -5,7 +5,7 @@ import (
 
 	"database/sql"
 
-	fiber "github.com/gofiber/fiber/v3"
+	fiber "github.com/gofiber/fiber/v2"
 	"github.com/openingwiki/backend/crud"
 )
 
@@ -26,10 +26,10 @@ type GetOpeningsQueryParameters struct {
 // @Failure		 400
 // @Failure		 500
 // @Router       /openings [get]
-func GetOpenings(c fiber.Ctx, db *sql.DB) error {
+func GetOpenings(c *fiber.Ctx, db *sql.DB) error {
 	queryParameters := new(GetOpeningsQueryParameters)
 
-	if err := c.Bind().Query(queryParameters); err != nil {
+	if err := c.QueryParser(queryParameters); err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString("Invalid query parameters")
 	}
 
@@ -56,7 +56,7 @@ func GetOpenings(c fiber.Ctx, db *sql.DB) error {
 // @Failure		 404
 // @Failure 	 500
 // @Router       /openings/{codename} [get]
-func GetOpening(c fiber.Ctx, db *sql.DB) error {
+func GetOpening(c *fiber.Ctx, db *sql.DB) error {
 	codename := c.Params("codename")
 
 	if codename == "" {

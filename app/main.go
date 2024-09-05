@@ -1,11 +1,11 @@
 package main
 
 import (
-	fiber "github.com/gofiber/fiber/v3"
+	fiber "github.com/gofiber/fiber/v2"
 	"github.com/openingwiki/backend/database"
 	_ "github.com/openingwiki/backend/docs" // Import the generated docs
 	"github.com/openingwiki/backend/handlers"
-	"github.com/openingwiki/backend/swagger"
+	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
 func main() {
@@ -17,23 +17,23 @@ func main() {
 	app := fiber.New()
 
 	// Docs route.
-	app.Get("/docs/*", swagger.HandlerDefault)
+	app.Get("/docs/*", fiberSwagger.WrapHandler)
 
-	app.Get("/openings", func(c fiber.Ctx) error {
+	app.Get("/openings", func(c *fiber.Ctx) error {
 		return handlers.GetOpenings(c, db)
 	})
-	app.Get("/openings/:codename", func(c fiber.Ctx) error {
+	app.Get("/openings/:codename", func(c *fiber.Ctx) error {
 		return handlers.GetOpening(c, db)
 	})
 
-	app.Post("/register", func(c fiber.Ctx) error {
+	app.Post("/register", func(c *fiber.Ctx) error {
 		return handlers.Register(c, db)
 	})
-	app.Post("/auth", func(c fiber.Ctx) error {
+	app.Post("/auth", func(c *fiber.Ctx) error {
 		return handlers.Autrhorize(c, db)
 	})
 
-	app.Get("/profile/:username", func(c fiber.Ctx) error {
+	app.Get("/profile/:username", func(c *fiber.Ctx) error {
 		return handlers.GetProfileByUsername(c, db)
 	})
 

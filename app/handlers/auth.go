@@ -3,7 +3,7 @@ package handlers
 import (
 	"database/sql"
 
-	fiber "github.com/gofiber/fiber/v3"
+	fiber "github.com/gofiber/fiber/v2"
 	"github.com/openingwiki/backend/crud"
 	"github.com/openingwiki/backend/security"
 )
@@ -31,10 +31,10 @@ type AuthBody struct {
 // @Failure 	 400
 // @Failure 	 500
 // @Router       /register [post]
-func Register(c fiber.Ctx, db *sql.DB) error {
+func Register(c *fiber.Ctx, db *sql.DB) error {
 	userRegisterData := new(RegistrationBody)
 
-	if err := c.Bind().Body(userRegisterData); err != nil {
+	if err := c.QueryParser(userRegisterData); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid body parameters",
 		})
@@ -77,10 +77,10 @@ func Register(c fiber.Ctx, db *sql.DB) error {
 // @Failure 	 400
 // @Failure 	 500
 // @Router       /auth [post]
-func Autrhorize(c fiber.Ctx, db *sql.DB) error {
+func Autrhorize(c *fiber.Ctx, db *sql.DB) error {
 	userAuthData := new(AuthBody)
 
-	if err := c.Bind().Body(userAuthData); err != nil {
+	if err := c.QueryParser(userAuthData); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid body parameters",
 		})
