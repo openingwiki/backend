@@ -30,7 +30,9 @@ func GetOpenings(c *fiber.Ctx, db *sql.DB) error {
 	queryParameters := new(GetOpeningsQueryParameters)
 
 	if err := c.QueryParser(queryParameters); err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString("Invalid query parameters")
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
 	}
 
 	if err := validate.Struct(queryParameters); err != nil {
@@ -66,7 +68,7 @@ func GetOpening(c *fiber.Ctx, db *sql.DB) error {
 	opening, err := crud.GetOpeningOut(db, codename)
 
 	if err != nil {
-		return c.Status(fiber.StatusNotFound).JSON("Opening doesn't found.")
+		return c.Status(fiber.StatusNotFound).JSON("Opening not found.")
 	}
 
 	return c.Status(fiber.StatusOK).JSON(opening)
