@@ -34,7 +34,7 @@ type AuthBody struct {
 func Register(c *fiber.Ctx, db *sql.DB) error {
 	userRegisterData := new(RegistrationBody)
 
-	if err := c.QueryParser(userRegisterData); err != nil {
+	if err := c.BodyParser(userRegisterData); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid body parameters",
 		})
