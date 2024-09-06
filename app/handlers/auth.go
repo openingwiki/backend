@@ -36,7 +36,7 @@ func Register(c *fiber.Ctx, db *sql.DB) error {
 
 	if err := c.BodyParser(userRegisterData); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid body parameters",
+			"error": err.Error(),
 		})
 	}
 
