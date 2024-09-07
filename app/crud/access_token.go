@@ -24,8 +24,8 @@ func CreateToken(db *sql.DB, userId int, token string) (*models.AccessTokenOut, 
 }
 
 func GetUserByToken(db *sql.DB, token string) (*models.User, error) {
-	neededColumns := "user.id, user.username, user.password_hash"
-	query := sq.Select(neededColumns).From("tokens").Where(sq.Eq{"token": token}).Join("users ON user.id=tokens.user_id")
+	neededColumns := "users.id, users.username, users.password_hash"
+	query := sq.Select(neededColumns).From("access_tokens").Where(sq.Eq{"token": token}).Join("users ON users.id=access_tokens.user_id").PlaceholderFormat(sq.Dollar)
 
 	row := query.RunWith(db).QueryRow()
 	var user models.User

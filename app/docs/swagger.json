@@ -53,6 +53,46 @@
                 }
             }
         },
+        "/me/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get user profile. Authorization Header needed in format Bearer {token}",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Get user profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserOut"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
         "/openings": {
             "get": {
                 "description": "Get list of openings by limit and offset",
@@ -273,6 +313,14 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Bearer token authentication",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

@@ -9,6 +9,11 @@ import (
 	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Bearer token authentication
+
 func main() {
 	// Init database.
 	db := database.ConnectToDatabase()
@@ -42,8 +47,12 @@ func main() {
 		return handlers.Autrhorize(c, db)
 	})
 
+	// Profile routes
 	app.Get("/profile/:username", func(c *fiber.Ctx) error {
 		return handlers.GetProfileByUsername(c, db)
+	})
+	app.Get("/me/profile", func(c *fiber.Ctx) error {
+		return handlers.GetUserProfile(c, db)
 	})
 
 	app.Listen(":8080")

@@ -61,6 +61,32 @@ paths:
       summary: Authorize user
       tags:
       - auth
+  /me/profile:
+    get:
+      consumes:
+      - application/json
+      description: Get user profile. Authorization Header needed in format Bearer
+        {token}
+      parameters:
+      - description: Username
+        in: header
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserOut'
+        "401":
+          description: Unauthorized
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - profile
   /openings:
     get:
       consumes:
@@ -177,4 +203,10 @@ paths:
       summary: Register user
       tags:
       - auth
+securityDefinitions:
+  BearerAuth:
+    description: Bearer token authentication
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
