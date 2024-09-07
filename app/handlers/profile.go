@@ -46,7 +46,6 @@ func GetProfileByUsername(c *fiber.Ctx, db *sql.DB) error {
 // @Tags         profile
 // @Accept       json
 // @Produce      json
-// @Param        username   header     string  true  "Username"
 // @Success 200 {object} models.UserOut
 // @Failure 401
 // @Security BearerAuth
