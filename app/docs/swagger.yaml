@@ -67,12 +67,6 @@ paths:
       - application/json
       description: Get user profile. Authorization Header needed in format Bearer
         {token}
-      parameters:
-      - description: Username
-        in: header
-        name: username
-        required: true
-        type: string
       produces:
       - application/json
       responses:

@@ -1,6 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/openingwiki/backend/database"
@@ -55,5 +60,26 @@ func main() {
 		return handlers.GetUserProfile(c, db)
 	})
 
-	app.Listen(":8080")
+	// Create a channel to receive OS signals
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+
+	// Start the Fiber server in a separate goroutine
+	go func() {
+		if err := app.Listen(":8080"); err != nil {
+			fmt.Printf("Server error: %v\n", err)
+		}
+	}()
+
+	// Wait for a signal
+	sig := <-signalChan
+	fmt.Printf("Received signal: %s\n", sig)
+
+	// Gracefully stop the Fiber app
+	fmt.Println("Shutting down gracefully...")
+	if err := app.Shutdown(); err != nil {
+		fmt.Printf("Shutdown error: %v\n", err)
+	}
+
+	fmt.Println("Cleanup complete. Exiting...")
 }
