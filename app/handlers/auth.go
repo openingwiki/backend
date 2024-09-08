@@ -98,7 +98,7 @@ func Autrhorize(c *fiber.Ctx, db *sql.DB) error {
 	}
 
 	// Checking that password is correct.
-	hashedPassword, _ := security.HashPassword(userAuthData.Password)
+	hashedPassword := user.PasswordHash
 	if err := security.ComparePassword(hashedPassword, userAuthData.Password); err != nil {
 		return c.Status(fiber.StatusUnauthorized).SendString("Wrong credentials")
 	}
