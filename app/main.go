@@ -34,9 +34,10 @@ func main() {
 		TimeZone:   "Local",
 	}))
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",                                           // Frontend origin
-		AllowHeaders: "Origin, Content-Type, Accept, Authorization", // Allowed headers
-		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",             // Allowed HTTP methods
+		AllowOrigins:     "http://localhost:3000,http://localhost:8080", // Frontend origin
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization", // Allowed headers
+		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",             // Allowed HTTP methods
+		AllowCredentials: true,
 	}))
 
 	// Docs route.
@@ -64,6 +65,9 @@ func main() {
 	})
 	app.Get("/me/profile", func(c *fiber.Ctx) error {
 		return handlers.GetUserProfile(c, db)
+	})
+	app.Get("/username/:username/check", func(c *fiber.Ctx) error {
+		return handlers.CheckUsername(c, db)
 	})
 
 	// Create a channel to receive OS signals

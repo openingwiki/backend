@@ -41,5 +41,5 @@ CREATE TABLE IF NOT EXISTS openings (
 if [ $? -eq 0 ]; then
     echo "Tables created successfully."
 else
-    echo "Failed to insert data."
+    echo "Failed to create tables."
 fi

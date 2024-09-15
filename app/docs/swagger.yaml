@@ -4,6 +4,11 @@ definitions:
       token:
         type: string
     type: object
+  models.BoolJson:
+    properties:
+      result:
+        type: boolean
+    type: object
   models.OpeningOut:
     properties:
       anime_name:
@@ -197,6 +202,27 @@ paths:
       summary: Register user
       tags:
       - auth
+  /username/{username}/check:
+    get:
+      consumes:
+      - application/json
+      description: Check if username exists
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BoolJson'
+      summary: Check if username exists
+      tags:
+      - profile
 securityDefinitions:
   BearerAuth:
     description: Bearer token authentication

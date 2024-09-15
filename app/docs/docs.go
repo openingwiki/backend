@@ -271,6 +271,38 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/username/{username}/check": {
+            "get": {
+                "description": "Check if username exists",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Check if username exists",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.BoolJson"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -279,6 +311,14 @@ const docTemplate = `{
             "properties": {
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "models.BoolJson": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "boolean"
                 }
             }
         },

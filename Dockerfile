@@ -1,31 +1,30 @@
-FROM golang:1.23 AS builder
+FROM golang:1.23-alpine AS build
 
 WORKDIR /app
 
-COPY app/ ./
-COPY app/go.mod app/go.sum ./
+COPY app/ .
 
 RUN go mod download
+RUN go build -o fiber-app main.go
 
-COPY scripts/ ./
+FROM ubuntu:20.04
 
-RUN go build -o main .
-
-FROM debian:bullseye-slim
+# RUN apk --no-cache add ca-certificates
+COPY --from=build /app/fiber-app .
 
 RUN apt-get update && \
-    apt-get install -y \
-    bash \
-    && rm -rf /var/lib/apt/lists/*
+    apt-get install -y postgresql-client
 
-WORKDIR /app
-
-COPY --from=builder /app/main .
-
-# Executring pre-start sh scripts.
-COPY scripts/insert_openings.sh .
-RUN chmod +x insert_openings.sh
-RUN ./insert_openings.sh
 EXPOSE 8080
 
-CMD ["bash", "./main"]
+# Runing scripts for preparing db.
+COPY app/.env .env
+COPY scripts/ /app/scripts/
+
+# Make the shell scripts executable
+RUN chmod +x /app/scripts/*.sh
+
+# Execute the shell scripts
+# Scripts run will be there.
+
+CMD ["./fiber-app"]
