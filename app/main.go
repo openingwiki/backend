@@ -70,6 +70,11 @@ func main() {
 		return handlers.CheckUsername(c, db)
 	})
 
+	// Anime routes.
+	app.Get("/anime/:codename", func(c *fiber.Ctx) error {
+		return handlers.GetAnime(c, db)
+	})
+
 	// Create a channel to receive OS signals
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)

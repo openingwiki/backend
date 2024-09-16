@@ -22,7 +22,7 @@ type GetOpeningsQueryParameters struct {
 // @Produce      json
 // @Param        limit   query     int  false  "Count of resulting rows"
 // @Param 		 offset  query	   int	false  "Offset of the query"
-// @Success      200 	 {object}  []models.OpeningOut
+// @Success      200 	 {object}  []models.OpeningsOut
 // @Failure		 400
 // @Failure		 500
 // @Router       /openings [get]

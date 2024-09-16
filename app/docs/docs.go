@@ -15,6 +15,47 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/anime/{codename}": {
+            "get": {
+                "description": "Get one anime by its codename",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "anime"
+                ],
+                "summary": "Get one anime by its codename",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Codename of anime to get",
+                        "name": "codename",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AnimeOut"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/auth": {
             "post": {
                 "description": "Authorize user",
@@ -128,7 +169,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.OpeningOut"
+                                "$ref": "#/definitions/models.OpeningsOut"
                             }
                         }
                     },
@@ -314,6 +355,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.AnimeOut": {
+            "type": "object",
+            "properties": {
+                "codename": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.BoolJson": {
             "type": "object",
             "properties": {
@@ -325,8 +380,31 @@ const docTemplate = `{
         "models.OpeningOut": {
             "type": "object",
             "properties": {
-                "anime_name": {
+                "anime_id": {
+                    "type": "integer"
+                },
+                "codename": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "thumbnail_link": {
+                    "type": "string"
+                },
+                "youtube_embed_link": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.OpeningsOut": {
+            "type": "object",
+            "properties": {
+                "anime_name": {
+                    "type": "integer"
                 },
                 "codename": {
                     "type": "string"

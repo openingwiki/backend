@@ -40,7 +40,8 @@ func createAnimeTable(db *sql.DB) {
 	query := `
 	CREATE TABLE IF NOT EXISTS anime (
 		id SERIAL PRIMARY KEY,
-		name TEXT NOT NULL
+		name TEXT NOT NULL,
+		codename TEXT UNIQUE NOT NULL
 	)`
 	_, err := db.Exec(query)
 

@@ -8,7 +8,7 @@ import (
 	"github.com/openingwiki/backend/models"
 )
 
-func GetOpeningsOut(db *sql.DB, limit int, offset int) []models.OpeningOut {
+func GetOpeningsOut(db *sql.DB, limit int, offset int) []models.OpeningsOut {
 	neededColumns := "openings.id, openings.name, openings.codename, openings.youtube_embed_link, openings.thumbnail_link, anime.name"
 	query := sq.Select(neededColumns).From("openings").Join("anime ON anime.id=openings.anime_id").Limit(uint64(limit)).Offset(uint64(offset))
 
@@ -20,10 +20,10 @@ func GetOpeningsOut(db *sql.DB, limit int, offset int) []models.OpeningOut {
 
 	defer rows.Close()
 
-	openings := []models.OpeningOut{}
+	openings := []models.OpeningsOut{}
 
 	for rows.Next() {
-		var opening models.OpeningOut
+		var opening models.OpeningsOut
 
 		if err := rows.Scan(&opening.ID, &opening.Name, &opening.Codename, &opening.YoutubeEmbedLink, &opening.ThumbnailLink, &opening.AnimeName); err != nil {
 			log.Fatal("Error trying to scan result:", err)
@@ -36,13 +36,13 @@ func GetOpeningsOut(db *sql.DB, limit int, offset int) []models.OpeningOut {
 }
 
 func GetOpeningOut(db *sql.DB, codename string) (*models.OpeningOut, error) {
-	neededColumns := "openings.id, openings.name, openings.codename, openings.youtube_embed_link, openings.thumbnail_link, anime.name"
+	neededColumns := "openings.id, openings.name, openings.codename, openings.youtube_embed_link, openings.thumbnail_link, anime.id"
 	query := sq.Select(neededColumns).From("openings").Join("anime ON anime.id=openings.anime_id").Where(sq.Expr("LOWER(openings.codename) = LOWER($1)", codename))
 
 	row := query.RunWith(db).QueryRow()
 
 	var opening models.OpeningOut
-	if err := row.Scan(&opening.ID, &opening.Name, &opening.Codename, &opening.YoutubeEmbedLink, &opening.ThumbnailLink, &opening.AnimeName); err != nil {
+	if err := row.Scan(&opening.ID, &opening.Name, &opening.Codename, &opening.YoutubeEmbedLink, &opening.ThumbnailLink, &opening.AnimeId); err != nil {
 		return nil, err
 	}
 
