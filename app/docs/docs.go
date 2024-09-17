@@ -380,8 +380,8 @@ const docTemplate = `{
         "models.OpeningOut": {
             "type": "object",
             "properties": {
-                "anime_id": {
-                    "type": "integer"
+                "anime_codename": {
+                    "type": "string"
                 },
                 "codename": {
                     "type": "string"
@@ -404,7 +404,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "anime_name": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "codename": {
                     "type": "string"

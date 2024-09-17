@@ -36,13 +36,13 @@ func GetOpeningsOut(db *sql.DB, limit int, offset int) []models.OpeningsOut {
 }
 
 func GetOpeningOut(db *sql.DB, codename string) (*models.OpeningOut, error) {
-	neededColumns := "openings.id, openings.name, openings.codename, openings.youtube_embed_link, openings.thumbnail_link, anime.id"
+	neededColumns := "openings.id, openings.name, openings.codename, openings.youtube_embed_link, openings.thumbnail_link, anime.codename"
 	query := sq.Select(neededColumns).From("openings").Join("anime ON anime.id=openings.anime_id").Where(sq.Expr("LOWER(openings.codename) = LOWER($1)", codename))
 
 	row := query.RunWith(db).QueryRow()
 
 	var opening models.OpeningOut
-	if err := row.Scan(&opening.ID, &opening.Name, &opening.Codename, &opening.YoutubeEmbedLink, &opening.ThumbnailLink, &opening.AnimeId); err != nil {
+	if err := row.Scan(&opening.ID, &opening.Name, &opening.Codename, &opening.YoutubeEmbedLink, &opening.ThumbnailLink, &opening.AnimeCodename); err != nil {
 		return nil, err
 	}
 

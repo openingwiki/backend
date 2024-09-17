@@ -20,8 +20,8 @@ definitions:
     type: object
   models.OpeningOut:
     properties:
-      anime_id:
-        type: integer
+      anime_codename:
+        type: string
       codename:
         type: string
       id:
@@ -36,7 +36,7 @@ definitions:
   models.OpeningsOut:
     properties:
       anime_name:
-        type: integer
+        type: string
       codename:
         type: string
       id:
