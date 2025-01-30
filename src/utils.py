@@ -2,11 +2,11 @@ from enum import Enum
 
 from sqlalchemy.orm import Session
 
-from schemas import UserCreate
+from schemas import UserCreate, AccessTokenCreate
 from core import security, settings
 from database import Base, engine
-from models import User
-from crud import CrudUser
+from models import User, AccessToken
+from crud import CrudUser, CrudAccessToken
 
 
 class Role(Enum):
@@ -15,10 +15,18 @@ class Role(Enum):
     USER = "user"
 
 
+class OpeningStatus(Enum):
+    ON_MODERATION = "moderation"
+    ACCEPTED = "accepted"
+
+
 MOCK_USERS = [
     UserCreate(username="admin", hashed_password=security.get_password_hash("admin"), role=Role.ADMIN),
     UserCreate(username="user", hashed_password=security.get_password_hash("user"), role=Role.USER),
     UserCreate(username="moderator", hashed_password=security.get_password_hash("moderator"), role=Role.MODERATOR)
+]
+MOCK_ACCESS_TOKENS = [
+    AccessTokenCreate(user_id=1, token="1")
 ]
 
 
@@ -29,9 +37,13 @@ def init_db(db: Session):
         Base.metadata.create_all(bind=engine)
 
         crud_user = CrudUser(User)
+        crud_access_token = CrudAccessToken(AccessToken)
 
         for mock_user in MOCK_USERS:
             crud_user.create(db, mock_user)
+        
+        for mock_access_token in MOCK_ACCESS_TOKENS:
+            crud_access_token.create(db, mock_access_token) 
 
     else:
         Base.metadata.create_all(bind=engine)

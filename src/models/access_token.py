@@ -10,7 +10,7 @@ class AccessToken(Base):
     __tablename__ = "access_tokens"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), index=True, unique=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     token = Column(String, index=True, unique=True)
     created_at = Column(DateTime, default=datetime.datetime.now)
 

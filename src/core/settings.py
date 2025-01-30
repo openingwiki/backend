@@ -8,6 +8,7 @@ class Settings:
 
     API_REQUEST_PREFIX = "/api"
     TOKEN_LENGHT_IN_BYTES = 256
+    PATH_TO_THUMBNAILS = config["PATH_TO_THUMBNAILS"]
 
     DROP_DATABASE_EVERY_LAUNCH = True
 

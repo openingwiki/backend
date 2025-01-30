@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
 from database import Base
-from models.opening_artist import OpeningArtist
+from models.opening_artist import openings_artists
 
 
 class Artist(Base):
@@ -14,4 +14,4 @@ class Artist(Base):
     name = Column(String)
     created_at = Column(DateTime, default=datetime.datetime.now)
 
-    openings = relationship("Opening", secondary=OpeningArtist, back_populates="artists")
+    openings = relationship("Opening", secondary=openings_artists, back_populates="artists")
