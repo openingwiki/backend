@@ -1,4 +1,2 @@
-from .settings import Settings
-
-
-settings = Settings()
+from . import security
+from .settings import settings

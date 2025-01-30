@@ -7,4 +7,8 @@ class Settings:
     DATABASE_URL = config["DATABASE_URL"]
 
     API_REQUEST_PREFIX = "/api"
-    
+    TOKEN_LENGHT_IN_BYTES = 256
+
+    DROP_DATABASE_EVERY_LAUNCH = True
+
+settings = Settings()

@@ -15,4 +15,6 @@ Base = declarative_base()
 
 
 def init_db(db: Session):
+    if settings.DROP_DATABASE_EVERY_LAUNCH:
+        Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)

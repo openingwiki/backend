@@ -13,16 +13,8 @@ class CrudUser(CrudBase[User, UserCreate, UserUpdate]):
     def __init__(self, Model: type[User]):
         super().__init__(Model)
 
-    def get_by_login(self, db: Session, login: str) -> User | None:
-        """
-        Get user by login.
+    def get_by_username(self, db: Session, username: str) -> User | None:
+        return db.query(User).filter(User.username == username).first()
 
-        Parameters:
-            db: Session - db session to deal with.
-            login: str - login of the user to get.
-
-        Return:
-            user: User - user sqlalchemy model.
-        """
-        return db.query(User).filter(User.login == login).first()
-
+    def is_username(self, db: Session, username: str) -> User | None:
+        return self.get_by_username(db, username) != None    
