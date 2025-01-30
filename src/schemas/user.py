@@ -11,12 +11,14 @@ class UserRegistration(BaseModel):
 class UserCreate(BaseModel):
     username: str
     hashed_password: str
+    role: str
 
     @classmethod
     def convert_from_user_registration(cls, user_data: UserRegistration):
         return cls(
             username=user_data.username,
             hashed_password=security.get_password_hash(user_data.password),
+            role="user"
         )
 
 class UserAuth(BaseModel):
