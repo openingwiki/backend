@@ -48,7 +48,7 @@ async def register_user(
     return user
 
 
-@router.post("/sign-in", description="Authorization request.", status_code=200)
+@router.post("/login", description="Authorization request.", status_code=200)
 async def authenticate_user(
     user_auth: UserAuth, db: Session = Depends(dependencies.get_db)
 ) -> AccessTokenOut:
