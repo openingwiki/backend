@@ -5,13 +5,13 @@ from core import security
 from crud import CrudAccessToken, CrudUser
 from models import AccessToken, User
 from schemas import (
-    AccessTokenCreate,
     AccessTokenOut,
     UserAuth,
     UserCreate,
     UserOut,
     UserRegistration,
 )
+from utils import create_token
 
 from .. import dependencies
 
@@ -29,7 +29,7 @@ crud_access_token = CrudAccessToken(AccessToken)
 )
 async def register_user(
     user_registration: UserRegistration, db: Session = Depends(dependencies.get_db)
-) -> UserOut:
+) -> AccessTokenOut:
     """
     User registration.
 
@@ -45,7 +45,7 @@ async def register_user(
     user_create = UserCreate.convert_from_user_registration(user_registration)
     user = crud_user.create(db, user_create)
 
-    return user
+    return create_token(db, user)
 
 
 @router.post("/login", description="Authorization request.", status_code=200)
@@ -76,10 +76,4 @@ async def authenticate_user(
             status.HTTP_401_UNAUTHORIZED, detail="Wrong password or login"
         )
 
-    access_token_create = AccessTokenCreate(
-        user_id=user.id,
-        token=security.create_token(),
-    )
-    access_token = crud_access_token.create(db, access_token_create)
-
-    return access_token
+    return create_token(db, user)

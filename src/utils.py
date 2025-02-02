@@ -9,6 +9,10 @@ from models import User, AccessToken
 from crud import CrudUser, CrudAccessToken
 
 
+crud_user = CrudUser(User)
+crud_access_token = CrudAccessToken(AccessToken)
+
+
 class Role(Enum):
     ADMIN = "admin"
     MODERATOR = "moderator"
@@ -36,9 +40,6 @@ def init_db(db: Session):
         Base.metadata.drop_all(bind=engine)
         Base.metadata.create_all(bind=engine)
 
-        crud_user = CrudUser(User)
-        crud_access_token = CrudAccessToken(AccessToken)
-
         for mock_user in MOCK_USERS:
             crud_user.create(db, mock_user)
         
@@ -49,3 +50,12 @@ def init_db(db: Session):
         Base.metadata.create_all(bind=engine)
 
 
+def create_token(db: Session, user: User) -> AccessToken:
+    """Utility function to create token"""
+    access_token_create = AccessTokenCreate(
+        user_id=user.id,
+        token=security.create_token(),
+    )
+    access_token = crud_access_token.create(db, access_token_create)
+
+    return access_token
