@@ -1,9 +1,9 @@
 """
 Dependencies for FastAPI dependency injection system.
 """
-from typing import Generator, Annotated
+from typing import Generator
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Cookie
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -35,8 +35,12 @@ def get_db() -> Generator:
         db.close()
 
 
+def get_access_token(access_token: str = Cookie(None)):
+    return access_token
+
+
 def get_current_user(
-    access_token_str: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
+    access_token_str: str = Depends(get_access_token), db: Session = Depends(get_db)
 ) -> User:
     """
     This dependency injection used for getting user,

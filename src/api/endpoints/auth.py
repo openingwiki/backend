@@ -1,14 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
 from core import security
 from crud import CrudAccessToken, CrudUser
 from models import AccessToken, User
 from schemas import (
-    AccessTokenOut,
+    UserOut,
     UserAuth,
     UserCreate,
-    UserOut,
     UserRegistration,
 )
 from utils import create_token
@@ -28,8 +27,8 @@ crud_access_token = CrudAccessToken(AccessToken)
     response_model_exclude_none=True,
 )
 async def register_user(
-    user_registration: UserRegistration, db: Session = Depends(dependencies.get_db)
-) -> AccessTokenOut:
+    user_registration: UserRegistration, response: Response, db: Session = Depends(dependencies.get_db)
+) -> UserOut:
     """
     User registration.
 
@@ -45,13 +44,15 @@ async def register_user(
     user_create = UserCreate.convert_from_user_registration(user_registration)
     user = crud_user.create(db, user_create)
 
-    return create_token(db, user)
+    access_token = create_token(db, user)
+    response.set_cookie(key="access_token", value=access_token.token, httponly=True, secure=True, samesite="Strict")
+    return access_token.user
 
 
 @router.post("/login", description="Authorization request.", status_code=200)
 async def authenticate_user(
-    user_auth: UserAuth, db: Session = Depends(dependencies.get_db)
-) -> AccessTokenOut:
+    user_auth: UserAuth, response: Response, db: Session = Depends(dependencies.get_db)
+) -> UserOut:
     """
     Authenticate user by username and password.
     Returning token as response.
@@ -76,4 +77,6 @@ async def authenticate_user(
             status.HTTP_401_UNAUTHORIZED, detail="Wrong password or login"
         )
 
-    return create_token(db, user)
+    access_token = create_token(db, user)
+    response.set_cookie(key="access_token", value=access_token.token, httponly=True, secure=True, samesite="Strict")
+    return access_token.user
