@@ -7,7 +7,8 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from core import settings
-from .endpoints import ping, auth, anime, openings, users
+from .endpoints import ping, auth, anime, openings, users, artist
+
 
 api_router = APIRouter()
 api_router.include_router(ping.router, prefix="/ping")
@@ -15,6 +16,7 @@ api_router.include_router(auth.router, prefix="/auth")
 api_router.include_router(anime.router, prefix="/anime")
 api_router.include_router(openings.router, prefix="/openings")
 api_router.include_router(users.router, prefix="/users")
+api_router.include_router(artist.router, prefix="/artist")
 
 app = FastAPI()
 
