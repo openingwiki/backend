@@ -1,10 +1,3 @@
-import logging
-
-# Enable SQLAlchemy logging to display all executed queries
-logging.basicConfig()
-logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
-
-
 import models # For database initialization!
 from api import app
 from core import settings

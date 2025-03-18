@@ -25,3 +25,17 @@ async def add_artist(
     artist_create = ArtistCreate(name=artist_name)
     artist = crud_artist.create(db, artist_create)
     return artist
+
+
+@router.get(
+    "/",
+    description="Find artist by query.",
+    status_code=200,
+    response_model_exclude_none=True,
+)
+async def find_artist(
+    query: str, db: Session = Depends(dependencies.get_db)
+) -> list[ArtistOut]:
+    """Search for artist by name."""
+    artist_list = crud_artist.search_by_name(db, query)
+    return artist_list
