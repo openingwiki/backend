@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, Form
+from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, Form, Query
 from sqlalchemy.orm import Session
 
 from crud import CrudAnime
@@ -41,3 +41,16 @@ async def add_anime(
         print("Error while loading image.")
 
     return anime
+
+@router.get(
+    "/",
+    description="Find anime by query.",
+    status_code=200,
+    response_model_exclude_none=True,
+)
+async def find_anime(
+    query: str, db: Session = Depends(dependencies.get_db)
+) -> list[AnimeOut]:
+    """Search for anime by name."""
+    anime_list = crud_anime.search_by_name(db, query)
+    return anime_list
