@@ -1,12 +1,12 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, Form, Query
+from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
 from sqlalchemy.orm import Session
 
 from crud import CrudAnime
 from models import Anime
 from schemas import (
-    AnimeCreate, AnimeOut
+    AnimeCreate, AnimeOut, AnimePost
 )
 from core import settings
 
@@ -24,23 +24,39 @@ crud_anime = CrudAnime(Anime)
     response_model_exclude_none=True,
 )
 async def add_anime(
-    anime_name: Annotated[str, Form(alias="name")], anime_preview: UploadFile = File(alias="preview"), db: Session = Depends(dependencies.get_db)
+    anime_post: AnimePost, db: Session = Depends(dependencies.get_db)
 ) -> AnimeOut:
     """Request to add anime."""
+    anime_create = AnimeCreate.convert_from_anime_post(anime_post)
+    anime = crud_anime.create(db, anime_create)
+    return anime
+
+
+@router.post(
+    "/{anime_id}/preview-image",
+    description="Add anime preview.",
+    status_code=201,
+    response_model_exclude_none=True
+)
+async def add_anime_preview_image(
+    anime_id: int,  anime_preview: UploadFile = File(alias="preview"), db: Session = Depends(dependencies.get_db)
+):
+    """Request to add anime preview image."""
     if anime_preview.content_type != 'image/png':
         raise HTTPException(status_code=400, detail="File is not a PNG image")
 
-    anime_create = AnimeCreate(name=anime_name)
-    anime = crud_anime.create(db, anime_create)
+    if not crud_anime.is_anime(db, anime_id):
+       raise HTTPException(status_code=404, detail="Opening not found")
 
     try:
-        target_path = settings.PATH_TO_ANIME_PREVIEWS / f"{anime.id}.png"
+        target_path = settings.PATH_TO_ANIME_PREVIEWS / f"{anime_id}.png"
         with open(target_path, "wb") as f:
             f.write(await anime_preview.read())
     except:
         print("Error while loading image.")
 
-    return anime
+    return 201
+
 
 @router.get(
     "/",

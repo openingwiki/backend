@@ -25,14 +25,14 @@ router = APIRouter()
 )
 async def add_opening(
     opening_post: OpeningPost, db: Session = Depends(dependencies.get_db)
-):
+) -> OpeningOut:
     """Opening create request."""
     opening_create = OpeningCreate.convert_from_opening_post(opening_post=opening_post)
     opening = crud_opening.create(db, opening_create)
 
     crud_openings_artists.add_openings_artists(db, opening.id, opening_post.artist_ids)
 
-    return status.HTTP_201_CREATED
+    return opening
 
 
 @router.post(
