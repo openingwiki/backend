@@ -1,24 +1,20 @@
 import os
 import shutil
-from io import BytesIO
 
-from PIL import Image
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Form
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Form, status
 from pydantic import HttpUrl
 from sqlalchemy.orm import Session
 
-from crud import CrudOpening
+from crud import crud_opening, crud_openings_artists
 from core import settings
-from models import Opening, User
 from schemas import (
-    OpeningPost, OpeningOut, OpeningCreate, OpeningUpdate
+    OpeningOut, OpeningCreate, OpeningUpdate, OpeningPost
 )
 
 from .. import dependencies
 
 router = APIRouter()
 
-crud_opening = CrudOpening(Opening)
 
 
 @router.post(
@@ -28,31 +24,36 @@ crud_opening = CrudOpening(Opening)
     response_model_exclude_none=True,
 )
 async def add_opening(
-    name: str = Form(...), anime_id: int = Form(...), youtube_embed_link: HttpUrl = Form(...), thumbnail: UploadFile = File(...), db: Session = Depends(dependencies.get_db), user: User = Depends(dependencies.get_current_user)
-) -> OpeningOut:
+    opening_post: OpeningPost, db: Session = Depends(dependencies.get_db)
+):
     """Opening create request."""
-    opening_create = OpeningCreate(name=name, anime_id=anime_id, youtube_embed_link=str(youtube_embed_link))
+    opening_create = OpeningCreate.convert_from_opening_post(opening_post=opening_post)
     opening = crud_opening.create(db, opening_create)
 
-    if thumbnail.content_type != "image/png" and thumbnail.content_type != "image/jpg":
+    crud_openings_artists.add_openings_artists(db, opening.id, opening_post.artist_ids)
+
+    return status.HTTP_201_CREATED
+
+
+@router.post(
+    "/{opening_id}/preview-image",
+    description="Post opening preview image.",
+    status_code=201,
+    response_model_exclude_none=True,
+)
+async def add_preview_image(
+    opening_id: int, preview: UploadFile = File(...), db: Session = Depends(dependencies.get_db)
+):
+    """Post opening preview image."""
+
+    if preview.content_type != "image/png" and preview.content_type != "image/jpg":
         raise HTTPException(status_code=400, detail="Only PNG and JPG images are allowed")
 
-    contents = await thumbnail.read()
+    if not crud_opening.is_opening(db, opening_id):
+        raise HTTPException(status_code=404, detail="Opening not found")
 
-    try:
-        # Verify it's a PNG image
-        image = Image.open(BytesIO(contents))
-        if image.format != "PNG" and image.format != "JPG":
-            raise HTTPException(status_code=400, detail="Invalid PNG or JPG file")
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid PNG or JPG file")
-
-    # Reset file pointer (since we read it)
-    thumbnail.file.seek(0)
-
-    file_path = os.path.join(settings.PATH_TO_THUMBNAILS, str(opening.id))
+    file_path = os.path.join(settings.PATH_TO_THUMBNAILS, str(opening_id))
     with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(thumbnail.file, buffer)
-    
-    opening = crud_opening.update(db, opening, OpeningUpdate(thumbnail_path=file_path))
-    return opening
+        shutil.copyfileobj(preview.file, buffer)
+
+    return 201

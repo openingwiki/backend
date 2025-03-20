@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
 from database import Base
-from models.opening_artist import openings_artists
+from models.openings_artist import openings_artists
 
 
 class Artist(Base):

@@ -9,6 +9,6 @@ openings_artists = Table(
     "openings_artists",
     Base.metadata,
     Column("opening_id", Integer, ForeignKey("openings.id"), index=True),
-    Column("artists_id", Integer, ForeignKey("artists.id"), index=True),
+    Column("artist_id", Integer, ForeignKey("artists.id"), index=True),
     Column("created_at", DateTime, default=datetime.datetime.now)
 )
