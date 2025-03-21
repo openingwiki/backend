@@ -5,15 +5,54 @@ from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Form, s
 from pydantic import HttpUrl
 from sqlalchemy.orm import Session
 
+from models import Opening
 from crud import crud_opening, crud_openings_artists
 from core import settings
 from schemas import (
-    OpeningOut, OpeningCreate, OpeningUpdate, OpeningPost
+    OpeningOut, OpeningCreate, OpeningPost
 )
 
 from .. import dependencies
 
 router = APIRouter()
+
+
+def extract_youtube_id(youtube_embed_link: str) -> str:
+    return youtube_embed_link.split("/")[-1]
+
+@router.get(
+    "/",
+    description="Get opening by limit and offset.",
+    status_code=200,
+    response_model_exclude_none=True
+)
+async def search_openings(
+    limit: int, offset: int, query: str = "", db: Session = Depends(dependencies.get_db)
+) -> list[OpeningOut]:
+    """
+    Search openings by limit, offset, and query.
+    If empty query is specified, then random openings will be returned.
+    """
+    openings: list[Opening] = []
+
+    if query == "":
+        openings = crud_opening.get_by_limit_and_offset(db, limit, offset)
+    else:
+        # TODO: search method.
+        openings = crud_opening.get_by_limit_and_offset(db, limit, offset)
+
+    return [
+        OpeningOut(
+            name=opening.name,
+            anime_id=opening.anime_id,
+            artist_ids=[artist.id for artist in opening.artists],
+            youtube_embed_link=HttpUrl(opening.youtube_embed_link),
+            thumbnail_link=HttpUrl(
+                f"https://img.youtube.com/vi/{extract_youtube_id(opening.youtube_embed_link)}/hqdefault.jpg"
+            )
+        )
+        for opening in openings
+    ]
 
 
 @router.post(

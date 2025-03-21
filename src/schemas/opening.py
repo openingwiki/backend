@@ -33,5 +33,5 @@ class OpeningOut(BaseModel):
     name: str
     anime_id: int
     artist_ids: list[int]
-    youtube_embed_link: str
-    thumbnail_path: str
+    youtube_embed_link: HttpUrl
+    thumbnail_link: HttpUrl
