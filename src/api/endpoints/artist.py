@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from crud import crud_artist
 from schemas import (
-    ArtistCreate, ArtistOut
+    ArtistCreate, ArtistOut, ArtistPost
 )
 
 from .. import dependencies
@@ -19,10 +19,10 @@ router = APIRouter()
     response_model_exclude_none=True,
 )
 async def add_artist(
-    artist_name: Annotated[str, Form(alias="name")], db: Session = Depends(dependencies.get_db)
+    artist_post: ArtistPost, db: Session = Depends(dependencies.get_db)
 ) -> ArtistOut:
-    """Request to add anime."""
-    artist_create = ArtistCreate(name=artist_name)
+    """Request to add artist."""
+    artist_create = ArtistCreate.convert_from_artist_post(artist_post)
     artist = crud_artist.create(db, artist_create)
     return artist
 

@@ -16,7 +16,6 @@ from .. import dependencies
 router = APIRouter()
 
 
-
 @router.post(
     "/",
     description="Add opening.",
