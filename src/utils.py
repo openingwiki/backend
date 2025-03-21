@@ -2,15 +2,11 @@ from enum import Enum
 
 from sqlalchemy.orm import Session
 
-from schemas import UserCreate, AccessTokenCreate
+from schemas import UserCreate, AccessTokenCreate, AnimeCreate, ArtistCreate, OpeningCreate
 from core import security, settings
 from database import Base, engine
 from models import User, AccessToken
-from crud import CrudUser, CrudAccessToken
-
-
-crud_user = CrudUser(User)
-crud_access_token = CrudAccessToken(AccessToken)
+from crud import crud_user, crud_access_token, crud_anime, crud_opening, crud_openings_artists, crud_artist
 
 
 class Role(Enum):
@@ -32,6 +28,32 @@ MOCK_USERS = [
 MOCK_ACCESS_TOKENS = [
     AccessTokenCreate(user_id=1, token="1")
 ]
+MOCK_ANIME = [
+    AnimeCreate(name="Attack on Titan"),
+    AnimeCreate(name="Cowboy Bebop"),
+    AnimeCreate(name="Vinland Saga"),
+]
+MOCK_ARTISTS = [
+    ArtistCreate(name="Survive Said the Prophet"),
+    ArtistCreate(name="Man with a Mission"),
+    ArtistCreate(name="Anonymouz"),
+    ArtistCreate(name="Linked Horizon"),
+    ArtistCreate(name="YOSHIKI"),
+    ArtistCreate(name="HYDE"),
+    ArtistCreate(name="Shinsei Kamattechan"),
+    ArtistCreate(name="SiM"),
+    ArtistCreate(name="Seatbelts")
+]
+MOCK_OPENINGS = [
+    OpeningCreate(name="Tank!", anime_id=2, youtube_embed_link="https://www.youtube.com/embed/0hfOyOBHIq4"),
+    OpeningCreate(name="Mukanjyo", anime_id=3, youtube_embed_link="https://www.youtube.com/embed/l5wAdQ-UkWY"),
+    OpeningCreate(name="Feuerroter Pfeil und Bogen", anime_id=1, youtube_embed_link="https://www.youtube.com/embed/8OkpRK2_gVs")
+]
+MOCK_OPENINGS_ARTISTS = [
+    [1, [9]],
+    [2, [1]],
+    [3, [4]],
+]
 
 
 def init_db(db: Session):
@@ -44,7 +66,19 @@ def init_db(db: Session):
             crud_user.create(db, mock_user)
         
         for mock_access_token in MOCK_ACCESS_TOKENS:
-            crud_access_token.create(db, mock_access_token) 
+            crud_access_token.create(db, mock_access_token)
+
+        for mock_anime in MOCK_ANIME:
+            crud_anime.create(db, mock_anime)
+
+        for mock_artist in MOCK_ARTISTS:
+            crud_artist.create(db, mock_artist)
+
+        for mock_opening in MOCK_OPENINGS:
+            crud_opening.create(db, mock_opening)
+
+        for mock_openings_artists in MOCK_OPENINGS_ARTISTS:
+            crud_openings_artists.add_openings_artists(db, *mock_openings_artists)
 
     else:
         Base.metadata.create_all(bind=engine)
