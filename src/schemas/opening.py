@@ -1,13 +1,13 @@
 from typing import Optional
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, Field
 
 
 class OpeningPost(BaseModel):
     name: str
-    anime_id: int
-    artist_ids: list[int]
-    youtube_embed_link: HttpUrl
+    anime_id: int =  Field(alias="animeId")
+    artist_ids: list[int] =  Field(alias="artistIds")
+    youtube_embed_link: HttpUrl =  Field(alias="youtubeEmbedLink")
 
 
 class OpeningCreate(BaseModel):
@@ -29,7 +29,17 @@ class OpeningUpdate(BaseModel):
     thumbnail_path: Optional[str] = None
 
 
+class OpeningPreviewOut(BaseModel):
+    id: int
+    name: str
+    thumbnail_link: HttpUrl = Field(alias="thumbnailLink")
+
+    class Config:
+        populate_by_name = True
+
+
 class OpeningOut(BaseModel):
+    id: int
     name: str
     anime_id: int
     artist_ids: list[int]
