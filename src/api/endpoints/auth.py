@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
-from core import security
+from core import security, settings
 from crud import CrudAccessToken, CrudUser
 from models import AccessToken, User
 from schemas import (
@@ -45,7 +45,7 @@ async def register_user(
     user = crud_user.create(db, user_create)
 
     access_token = create_token(db, user)
-    response.set_cookie(key="access_token", value=access_token.token,  samesite="Lax", secure=False)
+    response.set_cookie(key="access_token", value=access_token.token,  samesite="Lax", secure=settings.IS_HTTPS)
     return access_token.user
 
 
@@ -78,5 +78,5 @@ async def authenticate_user(
         )
 
     access_token = create_token(db, user)
-    response.set_cookie(key="access_token", value=access_token.token,  samesite="Lax", secure=False)
+    response.set_cookie(key="access_token", value=access_token.token,  samesite="Lax", secure=settings.IS_HTTPS)
     return access_token.user
