@@ -11,7 +11,7 @@ class Settings:
     DROP_DATABASE_EVERY_LAUNCH = bool(strtobool(config["IS_SETTINGS_FOR_TESTS"]))
     CORS_ORIGINS = config["CORS_ORIGINS"].split(",")
 
-    API_REQUEST_PREFIX = "/api"
+    API_REQUEST_PREFIX = config["API_REQUEST_PREFIX"]
     TOKEN_LENGHT_IN_BYTES = 256
     PATH_TO_THUMBNAILS = Path(config["PATH_TO_THUMBNAILS"])
     PATH_TO_ANIME_PREVIEWS = Path(config["PATH_TO_ANIME_PREVIEWS"])
