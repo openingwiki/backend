@@ -1,10 +1,11 @@
 name: Pull FastAPI Repo on Release
 
 on:
+  workflow_dispatch:
   release:
     types:
       - published
-    workflow_dispatch:
+  
 
 jobs:
   pull-repo:
