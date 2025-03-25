@@ -21,6 +21,7 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
           cd ${{ secrets.REPO_PATH }}
+          git stash
           git pull origin main
           source venv/bin/activate 
           pip install -r requirements.txt
