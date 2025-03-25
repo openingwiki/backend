@@ -1,0 +1,28 @@
+name: Pull FastAPI Repo on Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  pull-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          sudo apt-get update && sudo apt-get install -y sshpass
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Pull latest changes on remote server
+        run: |
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            cd ${{ secrets.REPO_PATH }}
+            git pull origin main
+            source ${{ secrets.REPO_PATH }}/venv/bin/activate
+            pip install -r requirements.txt
+            systemctl restart openingwiki_backend.service
+          EOF
