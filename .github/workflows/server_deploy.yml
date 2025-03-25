@@ -14,11 +14,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up SSH
-        run: |
-          sudo apt-get update && sudo apt-get install -y sshpass
-          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+    
       - name: Pull latest changes on remote server
         run: |
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
