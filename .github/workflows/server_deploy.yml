@@ -1,29 +1,27 @@
-name: Pull FastAPI Repo on Release
+name: Deploy FastAPI on Release
 
 on:
+  workflow_dispatch: 
   release:
-    types:
-      - published
-    workflow_dispatch:
+    types: [published]
 
 jobs:
-  pull-repo:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up SSH
-        run: |
-          sudo apt-get update && sudo apt-get install -y sshpass
-          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Pull latest changes on remote server
-        run: |
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-            cd ${{ secrets.REPO_PATH }}
-            git pull origin main
-            source ${{ secrets.REPO_PATH }}/venv/bin/activate
-            pip install -r requirements.txt
-            systemctl restart openingwiki_backend.service
-          EOF
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script: |
+          cd ${{ secrets.REPO_PATH }}
+          git pull origin main
+          source venv/bin/activate 
+          pip install -r requirements.txt
+          sudo systemctl restart openingwiki_backend.service
