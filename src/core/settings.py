@@ -17,6 +17,6 @@ class Settings:
     PATH_TO_ANIME_PREVIEWS = Path(config["PATH_TO_ANIME_PREVIEWS"])
 
     IS_HTTPS = bool(strtobool(config["IS_HTTPS"])) 
-    
+
 
 settings = Settings()
