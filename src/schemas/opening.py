@@ -33,6 +33,8 @@ class OpeningPreviewOut(BaseModel):
     id: int
     name: str
     thumbnail_link: HttpUrl = Field(alias="thumbnailLink")
+    anime_name: str = Field(alias="animeName")
+    artist_names: list[str] = Field(alias="artistNames")
 
     class Config:
         populate_by_name = True

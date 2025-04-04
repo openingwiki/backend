@@ -21,3 +21,9 @@ class CrudArtist(CrudBase[Artist, ArtistCreate, ArtistUpdate]):
             .limit(limit)
             .all()
         )
+    
+    def get_by_limit(self, db: Session, limit: int = 10) -> list[Artist]:
+        """Return 10 random artists."""
+        return (
+            db.query(Artist).limit(limit).all()
+        )

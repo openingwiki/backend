@@ -24,3 +24,9 @@ class CrudAnime(CrudBase[Anime, AnimeCreate, AnimeUpdate]):
             .limit(limit)
             .all()
         )
+    
+    def get_by_limit(self, db: Session, limit: int = 10) -> list[Anime]:
+        """Return 10 random anime."""
+        return (
+            db.query(Anime).limit(limit).all()
+        )

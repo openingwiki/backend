@@ -36,6 +36,8 @@ def generate_opening_preview_out(opening: Opening) -> OpeningPreviewOut:
     return OpeningPreviewOut(
         id=opening.id,
         name=opening.name,
+        anime_name=opening.anime.name,
+        artist_names=[artist.name for artist in opening.artists],
         thumbnail_link=HttpUrl( f"https://img.youtube.com/vi/{extract_youtube_id(opening.youtube_embed_link)}/hqdefault.jpg")
     )
 

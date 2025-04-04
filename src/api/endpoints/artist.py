@@ -37,5 +37,10 @@ async def find_artist(
     query: str, db: Session = Depends(dependencies.get_db)
 ) -> list[ArtistOut]:
     """Search for artist by name."""
-    artist_list = crud_artist.search_by_name(db, query)
+    artist_list = []
+    if query != "":
+        artist_list = crud_artist.search_by_name(db, query)
+    else:
+        artist_list = crud_artist.get_by_limit(db)
+
     return artist_list

@@ -68,5 +68,9 @@ async def find_anime(
     query: str, db: Session = Depends(dependencies.get_db)
 ) -> list[AnimeOut]:
     """Search for anime by name."""
-    anime_list = crud_anime.search_by_name(db, query)
+    anime_list = []
+    if query != "":
+        anime_list = crud_anime.search_by_name(db, query)
+    else:
+        anime_list = crud_anime.get_by_limit(db)
     return anime_list
