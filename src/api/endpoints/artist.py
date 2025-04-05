@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from crud import crud_artist
@@ -15,7 +15,7 @@ router = APIRouter()
 @router.post(
     "/",
     description="Add artist.",
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     response_model_exclude_none=True,
 )
 async def add_artist(
@@ -30,7 +30,7 @@ async def add_artist(
 @router.get(
     "/",
     description="Find artist by query.",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     response_model_exclude_none=True,
 )
 async def find_artist(

@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
+from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, status
 from sqlalchemy.orm import Session
 
 from crud import CrudAnime
@@ -20,7 +20,7 @@ crud_anime = CrudAnime(Anime)
 @router.post(
     "/",
     description="Add anime.",
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     response_model_exclude_none=True,
 )
 async def add_anime(
@@ -35,7 +35,7 @@ async def add_anime(
 @router.post(
     "/{anime_id}/preview-image",
     description="Add anime preview.",
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     response_model_exclude_none=True
 )
 async def add_anime_preview_image(
@@ -55,13 +55,13 @@ async def add_anime_preview_image(
     except:
         print("Error while loading image.")
 
-    return 201
+    return status.HTTP_201_CREATED
 
 
 @router.get(
     "/",
     description="Find anime by query.",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     response_model_exclude_none=True,
 )
 async def find_anime(

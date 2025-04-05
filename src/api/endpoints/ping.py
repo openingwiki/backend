@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 router = APIRouter()
 
@@ -8,4 +8,4 @@ async def ping():
     """
     Response with 200 status code.
     """
-    return 200
+    return status.HTTP_200_OK

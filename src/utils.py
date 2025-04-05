@@ -93,3 +93,11 @@ def create_token(db: Session, user: User) -> AccessToken:
     access_token = crud_access_token.create(db, access_token_create)
 
     return access_token
+
+def extract_youtube_id(youtube_embed_link: str) -> str:
+    """Extracting youtube id from youtube embed link"""
+    return youtube_embed_link.split("/")[-1]
+
+def get_youtube_preview_by_embed_link(youtube_embed_link: str) -> str:
+    """Converting youtube link to it's preview link."""
+    return f"https://img.youtube.com/vi/{extract_youtube_id(youtube_embed_link)}/hqdefault.jpg"

@@ -23,7 +23,7 @@ crud_access_token = CrudAccessToken(AccessToken)
 @router.post(
     "/register",
     description="Register user.",
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     response_model_exclude_none=True,
 )
 async def register_user(
@@ -49,7 +49,7 @@ async def register_user(
     return access_token.user
 
 
-@router.post("/login", description="Authorization request.", status_code=200)
+@router.post("/login", description="Authorization request.", status_code=status.HTTP_200_OK)
 async def authenticate_user(
     user_auth: UserAuth, response: Response, db: Session = Depends(dependencies.get_db)
 ) -> UserOut:

@@ -1,8 +1,7 @@
 import os
 import shutil
 
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Form, status
-from pydantic import HttpUrl
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlalchemy.orm import Session
 
 from models import Opening
@@ -17,34 +16,10 @@ from .. import dependencies
 router = APIRouter()
 
 
-def extract_youtube_id(youtube_embed_link: str) -> str:
-    return youtube_embed_link.split("/")[-1]
-
-def generate_opening_out(opening: Opening) -> OpeningOut:
-    return OpeningOut(
-        id=opening.id,
-        name=opening.name,
-        anime_id=opening.anime_id,
-        artist_ids=[artist.id for artist in opening.artists],
-        youtube_embed_link=HttpUrl(opening.youtube_embed_link),
-        thumbnail_link=HttpUrl(
-            f"https://img.youtube.com/vi/{extract_youtube_id(opening.youtube_embed_link)}/hqdefault.jpg"
-        )
-    )
-
-def generate_opening_preview_out(opening: Opening) -> OpeningPreviewOut:
-    return OpeningPreviewOut(
-        id=opening.id,
-        name=opening.name,
-        anime_name=opening.anime.name,
-        artist_names=[artist.name for artist in opening.artists],
-        thumbnail_link=HttpUrl( f"https://img.youtube.com/vi/{extract_youtube_id(opening.youtube_embed_link)}/hqdefault.jpg")
-    )
-
 @router.get(
     "/",
     description="Get opening by limit and offset.",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
     response_model_exclude_none=True
 )
 async def search_openings(
@@ -63,14 +38,14 @@ async def search_openings(
         openings = crud_opening.get_by_limit_and_offset(db, limit, offset)
 
     return [
-        generate_opening_preview_out(opening) for opening in openings
+        OpeningPreviewOut.convert_from_opening(opening) for opening in openings
     ]
 
 
 @router.post(
     "/",
     description="Add opening.",
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     response_model_exclude_none=True,
 )
 async def add_opening(
@@ -82,13 +57,13 @@ async def add_opening(
 
     crud_openings_artists.add_openings_artists(db, opening.id, opening_post.artist_ids)
 
-    return generate_opening_out(opening)
+    return OpeningOut.convert_from_opening(opening)
 
 
 @router.post(
     "/{opening_id}/preview-image",
     description="Post opening preview image.",
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     response_model_exclude_none=True,
 )
 async def add_preview_image(
@@ -97,13 +72,13 @@ async def add_preview_image(
     """Post opening preview image."""
 
     if preview.content_type != "image/png" and preview.content_type != "image/jpg":
-        raise HTTPException(status_code=400, detail="Only PNG and JPG images are allowed")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only PNG and JPG images are allowed")
 
     if not crud_opening.is_opening(db, opening_id):
-        raise HTTPException(status_code=404, detail="Opening not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Opening not found")
 
     file_path = os.path.join(settings.PATH_TO_THUMBNAILS, str(opening_id))
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(preview.file, buffer)
 
-    return 201
+    return status.HTTP_201_CREATED
