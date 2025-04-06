@@ -50,14 +50,14 @@ async def search_openings(
 )
 async def add_opening(
     opening_post: OpeningPost, db: Session = Depends(dependencies.get_db)
-) -> OpeningOut:
+) -> OpeningPreviewOut:
     """Opening create request."""
     opening_create = OpeningCreate.convert_from_opening_post(opening_post=opening_post)
     opening = crud_opening.create(db, opening_create)
 
     crud_openings_artists.add_openings_artists(db, opening.id, opening_post.artist_ids)
 
-    return OpeningOut.convert_from_opening(opening)
+    return OpeningPreviewOut.convert_from_opening(opening)
 
 
 @router.post(
@@ -82,3 +82,19 @@ async def add_preview_image(
         shutil.copyfileobj(preview.file, buffer)
 
     return status.HTTP_201_CREATED
+
+@router.get(
+    "/{opening_id}",
+    description="Get opening.",
+    status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True
+)
+async def get_opening(
+    opening_id: int, db: Session = Depends(dependencies.get_db)
+) -> OpeningOut:
+    opening = crud_opening.get(db, opening_id)
+
+    if not opening:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    
+    return OpeningOut.convert_from_opening(opening)

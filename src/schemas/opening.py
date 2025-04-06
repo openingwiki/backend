@@ -3,6 +3,8 @@ from typing import Optional
 from pydantic import BaseModel, HttpUrl, Field
 
 from models import Opening
+from schemas.anime import AnimePreviewOut
+from schemas.artist import ArtistPreviewOut
 
 
 def extract_youtube_id(youtube_embed_link: str) -> str:
@@ -64,20 +66,23 @@ class OpeningPreviewOut(BaseModel):
 class OpeningOut(BaseModel):
     id: int
     name: str
-    anime_id: int
-    artist_ids: list[int]
-    youtube_embed_link: HttpUrl
-    thumbnail_link: HttpUrl
+    anime: AnimePreviewOut
+    artists: list[ArtistPreviewOut]
+    youtube_embed_link: HttpUrl = Field(alias="youtubeEmbedLink")
+    thumbnail_link: HttpUrl = Field(alias="thumbnailLink")
 
     @classmethod
     def convert_from_opening(cls, opening: Opening) -> "OpeningOut":
         return OpeningOut(
             id=opening.id,
             name=opening.name,
-            anime_id=opening.anime_id,
-            artist_ids=[artist.id for artist in opening.artists],
+            anime=AnimePreviewOut.convert_from_anime(opening.anime),
+            artists=[ArtistPreviewOut.convert_from_artist(artist) for artist in opening.artists],
             youtube_embed_link=HttpUrl(opening.youtube_embed_link),
             thumbnail_link=HttpUrl(
                 get_youtube_preview_by_embed_link(opening.youtube_embed_link)
             )
         )
+    
+    class Config:
+        populate_by_name = True

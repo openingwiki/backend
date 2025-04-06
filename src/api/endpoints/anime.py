@@ -3,18 +3,16 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, status
 from sqlalchemy.orm import Session
 
-from crud import CrudAnime
+from crud import crud_anime
 from models import Anime
 from schemas import (
-    AnimeCreate, AnimeOut, AnimePost
+    AnimeCreate, AnimeOut, AnimePost, AnimePreviewOut
 )
 from core import settings
 
 from .. import dependencies
 
 router = APIRouter()
-
-crud_anime = CrudAnime(Anime)
 
 
 @router.post(
@@ -25,7 +23,7 @@ crud_anime = CrudAnime(Anime)
 )
 async def add_anime(
     anime_post: AnimePost, db: Session = Depends(dependencies.get_db)
-) -> AnimeOut:
+) -> AnimePreviewOut:
     """Request to add anime."""
     anime_create = AnimeCreate.convert_from_anime_post(anime_post)
     anime = crud_anime.create(db, anime_create)
@@ -43,10 +41,10 @@ async def add_anime_preview_image(
 ):
     """Request to add anime preview image."""
     if anime_preview.content_type != 'image/png':
-        raise HTTPException(status_code=400, detail="File is not a PNG image")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File is not a PNG image")
 
     if not crud_anime.is_anime(db, anime_id):
-       raise HTTPException(status_code=404, detail="Opening not found")
+       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Opening not found")
 
     try:
         target_path = settings.PATH_TO_ANIME_PREVIEWS / f"{anime_id}.png"
@@ -66,7 +64,7 @@ async def add_anime_preview_image(
 )
 async def find_anime(
     query: str, db: Session = Depends(dependencies.get_db)
-) -> list[AnimeOut]:
+) -> list[AnimePreviewOut]:
     """Search for anime by name."""
     anime_list = []
     if query != "":

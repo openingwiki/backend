@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from crud import crud_artist
 from schemas import (
-    ArtistCreate, ArtistOut, ArtistPost
+    ArtistCreate, ArtistOut, ArtistPost, ArtistPreviewOut
 )
 
 from .. import dependencies
@@ -20,7 +20,7 @@ router = APIRouter()
 )
 async def add_artist(
     artist_post: ArtistPost, db: Session = Depends(dependencies.get_db)
-) -> ArtistOut:
+) -> ArtistPreviewOut:
     """Request to add artist."""
     artist_create = ArtistCreate.convert_from_artist_post(artist_post)
     artist = crud_artist.create(db, artist_create)
@@ -35,7 +35,7 @@ async def add_artist(
 )
 async def find_artist(
     query: str, db: Session = Depends(dependencies.get_db)
-) -> list[ArtistOut]:
+) -> list[ArtistPreviewOut]:
     """Search for artist by name."""
     artist_list = []
     if query != "":
