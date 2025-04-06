@@ -2,12 +2,17 @@ from typing import Optional
 
 from pydantic import BaseModel, HttpUrl, Field
 
-import utils
 from models import Opening
 
 
 def extract_youtube_id(youtube_embed_link: str) -> str:
+    """Extracting youtube id from youtube embed link"""
     return youtube_embed_link.split("/")[-1]
+
+def get_youtube_preview_by_embed_link(youtube_embed_link: str) -> str:
+    """Converting youtube link to it's preview link."""
+    return f"https://img.youtube.com/vi/{extract_youtube_id(youtube_embed_link)}/hqdefault.jpg"
+
 
 class OpeningPost(BaseModel):
     name: str
@@ -43,13 +48,13 @@ class OpeningPreviewOut(BaseModel):
     artist_names: list[str] = Field(alias="artistNames")
 
     @classmethod
-    def convert_from_opening(opening: Opening) -> "OpeningPreviewOut":
+    def convert_from_opening(cls, opening: Opening) -> "OpeningPreviewOut":
         return OpeningPreviewOut(
             id=opening.id,
             name=opening.name,
             anime_name=opening.anime.name,
             artist_names=[artist.name for artist in opening.artists],
-            thumbnail_link=HttpUrl(utils.get_youtube_preview_by_embed_link(opening.youtube_embed_link))
+            thumbnail_link=HttpUrl(get_youtube_preview_by_embed_link(opening.youtube_embed_link))
         )
 
     class Config:
@@ -65,7 +70,7 @@ class OpeningOut(BaseModel):
     thumbnail_link: HttpUrl
 
     @classmethod
-    def convert_from_opening(opening: Opening) -> "OpeningOut":
+    def convert_from_opening(cls, opening: Opening) -> "OpeningOut":
         return OpeningOut(
             id=opening.id,
             name=opening.name,
@@ -73,6 +78,6 @@ class OpeningOut(BaseModel):
             artist_ids=[artist.id for artist in opening.artists],
             youtube_embed_link=HttpUrl(opening.youtube_embed_link),
             thumbnail_link=HttpUrl(
-                utils.get_youtube_preview_by_embed_link(opening.youtube_embed_link)
+                get_youtube_preview_by_embed_link(opening.youtube_embed_link)
             )
         )
