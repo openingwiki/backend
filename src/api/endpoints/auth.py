@@ -45,7 +45,11 @@ async def register_user(
     user = crud_user.create(db, user_create)
 
     access_token = create_token(db, user)
-    response.set_cookie(key="access_token", value=access_token.token,  samesite="Lax", secure=settings.IS_HTTPS)
+    response.set_cookie(
+        key="access_token", value=access_token.token, 
+        samesite="Lax", secure=settings.IS_HTTPS,
+        max_age=settings.ACCESS_TOKEN_MAX_AGE
+    )
     return access_token.user
 
 
@@ -78,5 +82,9 @@ async def authenticate_user(
         )
 
     access_token = create_token(db, user)
-    response.set_cookie(key="access_token", value=access_token.token,  samesite="Lax", secure=settings.IS_HTTPS)
+    response.set_cookie(
+        key="access_token", value=access_token.token, 
+        samesite="Lax", secure=settings.IS_HTTPS,
+        max_age=settings.ACCESS_TOKEN_MAX_AGE
+    )
     return access_token.user
