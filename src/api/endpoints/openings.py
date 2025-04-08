@@ -34,8 +34,7 @@ async def search_openings(
     if query == "":
         openings = crud_opening.get_by_limit_and_offset(db, limit, offset)
     else:
-        # TODO: search method.
-        openings = crud_opening.get_by_limit_and_offset(db, limit, offset)
+        openings = crud_opening.search(db, query, limit, offset)
 
     return [
         OpeningPreviewOut.convert_from_opening(opening) for opening in openings

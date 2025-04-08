@@ -19,3 +19,12 @@ class CrudOpening(CrudBase[Opening, OpeningCreate, OpeningUpdate]):
 
     def get_by_limit_and_offset(self, db: Session, limit: int = 10, offset: int = 0) -> list[Opening]:
         return db.query(Opening).limit(limit).offset(offset).all()
+
+    def search(self, db: Session, query: str, limit: int = 10, offset: int = 0) -> list[Opening]:
+        return (
+            db.query(Opening)
+            .filter(Opening.name.ilike(f"%{query}%"))
+            .limit(limit)
+            .offset(offset)
+            .all()
+        )
