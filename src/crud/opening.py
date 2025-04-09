@@ -4,6 +4,7 @@ CRUD requests for the openings.
 from typing import Type
 
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from crud.base import CrudBase
 from models import Opening
@@ -27,4 +28,14 @@ class CrudOpening(CrudBase[Opening, OpeningCreate, OpeningUpdate]):
             .limit(limit)
             .offset(offset)
             .all()
+        )
+    
+    def get_total_number(self, db: Session) -> int:
+        return db.query(func.count(Opening.id)).scalar()
+
+    def get_search_total_number(self, db: Session, query: str) -> int:
+        return (
+            db.query(func.count(Opening.id))
+            .filter(Opening.name.ilike(f"%{query}%"))
+            .scalar()
         )

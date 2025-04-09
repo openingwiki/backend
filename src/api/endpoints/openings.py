@@ -8,7 +8,7 @@ from models import Opening
 from crud import crud_opening, crud_openings_artists
 from core import settings
 from schemas import (
-    OpeningOut, OpeningCreate, OpeningPost, OpeningPreviewOut
+    OpeningOut, OpeningCreate, OpeningPost, OpeningPreviewOut, OpeningPreviewSearch
 )
 
 from .. import dependencies
@@ -24,21 +24,26 @@ router = APIRouter()
 )
 async def search_openings(
     limit: int, offset: int, query: str = "", db: Session = Depends(dependencies.get_db)
-) -> list[OpeningPreviewOut]:
+) -> OpeningPreviewSearch:
     """
     Search openings by limit, offset, and query.
     If empty query is specified, then random openings will be returned.
     """
     openings: list[Opening] = []
+    total_number = 0
 
     if query == "":
         openings = crud_opening.get_by_limit_and_offset(db, limit, offset)
+        total_number = crud_opening.get_total_number(db)
     else:
         openings = crud_opening.search(db, query, limit, offset)
+        total_number = crud_opening.get_search_total_number(db, query)
 
-    return [
-        OpeningPreviewOut.convert_from_opening(opening) for opening in openings
-    ]
+    return OpeningPreviewSearch(
+        opening_previews=[OpeningPreviewOut.convert_from_opening(opening) for opening in openings],
+        totalNumber=total_number
+    )
+
 
 
 @router.post(

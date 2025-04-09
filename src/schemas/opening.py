@@ -86,3 +86,11 @@ class OpeningOut(BaseModel):
     
     class Config:
         populate_by_name = True
+
+
+class OpeningPreviewSearch(BaseModel):
+    total_number: int = Field(alias="totalNumber")
+    opening_previews: list[OpeningPreviewOut] = Field(alias="openingPreviews")
+
+    class Config:
+        populate_by_name = True
